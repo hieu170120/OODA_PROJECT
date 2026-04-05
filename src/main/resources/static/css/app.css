@@ -1,0 +1,203 @@
+:root {
+    --bg: #faf7f2;
+    --surface: #ffffff;
+    --text: #1c1917;
+    --muted: #78716c;
+    --accent: #c2410c;
+    --accent-hover: #9a3412;
+    --border: #e7e5e4;
+    --radius: 12px;
+    --shadow: 0 4px 24px rgba(28, 25, 23, 0.08);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+}
+
+.shell {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem;
+}
+
+header.bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+}
+
+.brand {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--text);
+    text-decoration: none;
+    letter-spacing: -0.02em;
+}
+
+.brand span {
+    color: var(--accent);
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.hero {
+    text-align: center;
+    padding: 3rem 0 2rem;
+}
+
+.hero h1 {
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    font-weight: 700;
+    margin: 0 0 0.75rem;
+    letter-spacing: -0.03em;
+}
+
+.hero p {
+    color: var(--muted);
+    max-width: 28rem;
+    margin: 0 auto 1.75rem;
+    font-size: 1.05rem;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.65rem 1.25rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: var(--accent-hover);
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+}
+
+.btn-ghost:hover {
+    color: var(--text);
+    border-color: var(--muted);
+}
+
+.card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.card h2 {
+    margin: 0 0 0.25rem;
+    font-size: 1.35rem;
+}
+
+.card .sub {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin: 0 0 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.1rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+    color: var(--text);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 1rem;
+    background: #fff;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(194, 65, 12, 0.15);
+}
+
+.card .btn-primary {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+}
+
+.alert {
+    padding: 0.65rem 0.85rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+
+.hint {
+    margin-top: 1.25rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-align: center;
+}
+
+.panel {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 1.75rem;
+    box-shadow: var(--shadow);
+}
+
+.panel h2 {
+    margin: 0 0 0.5rem;
+}
+
+.panel p {
+    margin: 0;
+    color: var(--muted);
+}
+
+.user-tag {
+    font-size: 0.85rem;
+    color: var(--muted);
+}
