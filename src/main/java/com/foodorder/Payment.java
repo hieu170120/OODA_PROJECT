@@ -9,6 +9,7 @@ public class Payment {
     private PaymentMethod paymentMethod;
     private PaymentStatus paymentStatus;
     private LocalDateTime paidAt;
+    private PaymentStrategy paymentStrategy;
 
     public Payment() {
     }
@@ -22,14 +23,34 @@ public class Payment {
         this.paidAt = paidAt;
     }
 
+    public Payment(String paymentId, Order order, double amount, PaymentMethod paymentMethod, PaymentStatus paymentStatus, LocalDateTime paidAt, PaymentStrategy paymentStrategy) {
+        this.paymentId = paymentId;
+        this.order = order;
+        this.amount = amount;
+        this.paymentMethod = paymentMethod;
+        this.paymentStatus = paymentStatus;
+        this.paidAt = paidAt;
+        this.paymentStrategy = paymentStrategy;
+    }
+
     public boolean processTransaction() {
         if (order == null || amount < 0) {
             this.paymentStatus = PaymentStatus.FAILED;
             return false;
         }
-        this.paymentStatus = PaymentStatus.COMPLETED;
-        this.paidAt = LocalDateTime.now();
-        return true;
+        if (this.paymentStrategy == null) {
+            this.paymentStatus = PaymentStatus.FAILED;
+            return false;
+        }
+        String transactionId = this.paymentId != null ? this.paymentId : "";
+        boolean success = this.paymentStrategy.processPayment(this.amount, transactionId);
+        if (success) {
+            this.paymentStatus = PaymentStatus.COMPLETED;
+            this.paidAt = LocalDateTime.now();
+        } else {
+            this.paymentStatus = PaymentStatus.FAILED;
+        }
+        return success;
     }
 
     public String getPaymentId() {
@@ -78,5 +99,13 @@ public class Payment {
 
     public void setPaidAt(LocalDateTime paidAt) {
         this.paidAt = paidAt;
+    }
+
+    public PaymentStrategy getPaymentStrategy() {
+        return paymentStrategy;
+    }
+
+    public void setPaymentStrategy(PaymentStrategy paymentStrategy) {
+        this.paymentStrategy = paymentStrategy;
     }
 }
