@@ -1,6 +1,5 @@
 package com.foodorder.builder;
 
-import com.foodorder.model.Coupon;
 import com.foodorder.model.enums.OrderStatus;
 import com.foodorder.model.Payment;
 import com.foodorder.model.Customer;
@@ -52,11 +51,6 @@ public class DeliveryOrderBuilder implements IOrderBuilder {
     @Override
     public void buildPayment(Payment payment) {
         this.result.setPayment(payment);
-    }
-
-    @Override
-    public void buildCoupon(Coupon coupon) {
-        this.result.applyCoupon(coupon);
     }
 
     @Override

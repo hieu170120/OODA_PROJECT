@@ -79,7 +79,7 @@ public class PageController {
                 String[] topParts = topStr.split("_");
                 String topName = topParts[0];
                 double topPrice = Double.parseDouble(topParts[1]);
-                finalDish = new Topping(finalDish, "T-" + System.currentTimeMillis(), topName, topPrice);
+                finalDish = new Topping(finalDish, topName, topPrice);
             }
         }
 

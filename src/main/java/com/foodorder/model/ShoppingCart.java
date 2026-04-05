@@ -38,6 +38,12 @@ public class ShoppingCart {
         return cartItems;
     }
 
+    public void addCartItem(CartItem item) {
+        if (item != null) {
+            this.cartItems.add(item);
+        }
+    }
+
     public void setCartItems(List<CartItem> cartItems) {
         this.cartItems = cartItems;
     }

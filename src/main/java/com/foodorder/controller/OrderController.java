@@ -46,8 +46,8 @@ public class OrderController {
         
         // Món 2: Burger (BaseDish) + Thêm Phô mai (Topping 1) + Thêm Trứng (Topping 2)
         IDish burger = new BaseDish("D2", "Burger Bò", 45000.0, "img/burger.png", "Burger bò phô mai");
-        burger = new Topping(burger, "T1", "Phô mai", 10000.0); // Bọc lần 1
-        burger = new Topping(burger, "T2", "Trứng ốp la", 8000.0); // Bọc lần 2
+        burger = new Topping(burger, "Phô mai", 10000.0); // Bọc lần 1
+        burger = new Topping(burger, "Trứng ốp la", 8000.0); // Bọc lần 2
 
         // 3. Đưa các món ăn vào OrderItem
         List<OrderItem> items = new ArrayList<>();

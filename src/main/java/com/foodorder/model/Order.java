@@ -39,15 +39,7 @@ public class Order {
     }
 
     public double calculateTotal() {
-        double total = 0.0;
-        if (orderItems != null) {
-            for (OrderItem item : orderItems) {
-                if (item != null) {
-                    total += item.calculateSubTotal();
-                }
-            }
-        }
-        total += shippingFee;
+        double total = subTotal + shippingFee;
         
         if (coupon != null && coupon.isValid(this)) {
             if (coupon.isPercentage()) {

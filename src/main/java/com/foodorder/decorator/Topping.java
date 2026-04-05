@@ -5,9 +5,8 @@ public class Topping extends DishDecorator {
     private String name;
     private double price;
 
-    public Topping(IDish dish, String toppingId, String name, double price) {
+    public Topping(IDish dish, String name, double price) {
         super(dish);
-        this.toppingId = toppingId;
         this.name = name;
         this.price = price;
     }

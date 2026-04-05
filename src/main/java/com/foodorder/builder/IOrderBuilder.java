@@ -1,6 +1,5 @@
 package com.foodorder.builder;
 
-import com.foodorder.model.Coupon;
 import com.foodorder.model.Payment;
 import com.foodorder.model.Customer;
 import com.foodorder.model.Order;
@@ -15,6 +14,5 @@ public interface IOrderBuilder {
     void buildItems(List<OrderItem> items);
     void buildDeliveryInfo(String address, LocalDateTime pickupTime);
     void buildPayment(Payment payment);
-    void buildCoupon(Coupon coupon);
     Order getResult();
 }

@@ -27,7 +27,11 @@ public class OrderService {
     }
 
     /**
-     * Dùng Builder và Director để tạo Order phức tạp
+     * Dùng Builder và Director để tạo Order phức tạp.
+     * Theo chuẩn Builder Pattern:
+     * - Director điều phối quá trình build (void)
+     * - Client lấy kết quả từ Builder qua getResult()
+     * - Coupon được áp dụng riêng qua Order.applyCoupon()
      */
     public Order createDeliveryOrder(Customer customer, List<OrderItem> items, String address, Coupon coupon) {
         // 1. Khởi tạo Builder (Loại đơn hàng giao tận nơi)
@@ -39,21 +43,27 @@ public class OrderService {
         // Tạm thời tạo payment rỗng (Thực tế sẽ lấy thông tin thanh toán từ User)
         Payment payment = new Payment(); 
         
-        // 3. Gọi Director để tự động hóa việc lắp ráp các thành phần của một đơn hàng Online
-        // Truyền thời gian giao hàng dự kiến là 30 phút kể từ lúc đặt
-        Order newOrder = director.constructOnlineOrder(
+        // 3. Director điều phối quá trình lắp ráp (void - đúng chuẩn Builder Pattern)
+        director.constructOnlineOrder(
                 customer, 
                 items, 
                 payment, 
                 address, 
-                LocalDateTime.now().plusMinutes(30), 
-                coupon
+                LocalDateTime.now().plusMinutes(30)
         );
+
+        // 4. Client lấy kết quả từ Builder
+        Order newOrder = builder.getResult();
+
+        // 5. Áp dụng coupon riêng biệt thông qua Order.applyCoupon() (đúng class diagram)
+        if (coupon != null) {
+            newOrder.applyCoupon(coupon);
+        }
 
         // Sinh ID tự động cho đơn hàng
         newOrder.setOrderId(UUID.randomUUID().toString());
 
-        // 4. Lưu vào DB qua Repository
+        // 6. Lưu vào DB qua Repository
         return orderRepository.save(newOrder); 
     }
 
