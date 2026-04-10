@@ -6,13 +6,13 @@ import com.foodorder.decorator.Topping;
 import com.foodorder.model.Customer;
 import com.foodorder.model.Order;
 import com.foodorder.model.OrderItem;
+import com.foodorder.model.enums.PaymentMethod;
 import com.foodorder.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
@@ -96,6 +96,7 @@ public class PageController {
     public String processCheckout(
             @RequestParam("customerName") String customerName,
             @RequestParam("address") String address,
+            @RequestParam(value = "paymentMethod", defaultValue = "COD") PaymentMethod paymentMethod,
             Model model
     ) {
         if (tempCart.isEmpty()) {
@@ -106,7 +107,14 @@ public class PageController {
         customer.setUserId("CUST-WEB-" + System.currentTimeMillis());
         customer.setFullName(customerName);
 
-        Order completedOrder = orderService.createDeliveryOrder(customer, tempCart, address, null);
+        Order completedOrder;
+        try {
+            completedOrder = orderService.createDeliveryOrder(customer, tempCart, address, null, paymentMethod);
+        } catch (IllegalArgumentException ex) {
+            model.addAttribute("cartItems", tempCart);
+            model.addAttribute("checkoutError", ex.getMessage());
+            return "order";
+        }
 
         model.addAttribute("order", completedOrder);
         

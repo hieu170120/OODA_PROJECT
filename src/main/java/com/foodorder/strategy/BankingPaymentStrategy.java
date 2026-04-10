@@ -1,5 +1,11 @@
 package com.foodorder.strategy;
 
+import org.springframework.stereotype.Component;
+
+/**
+ * Chuyển khoản ngân hàng (demo) — Strategy cho {@link com.foodorder.model.enums.PaymentMethod#BANKING}.
+ */
+@Component
 public class BankingPaymentStrategy implements PaymentStrategy {
 
     @Override
