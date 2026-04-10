@@ -3,47 +3,23 @@ package com.foodorder.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/css/**", "/error").permitAll()
-                        .anyRequest().authenticated())
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/home", true)
-                        .permitAll())
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/")
-                        .permitAll());
+            .authorizeHttpRequests(auth -> auth
+                // Cho phép tất cả mọi người truy cập vào các trang này mà không cần đăng nhập
+                .requestMatchers("/", "/home", "/login", "/order", "/order/add-item", "/order/checkout", "/api/v1/orders/**").permitAll()
+                .anyRequest().permitAll() // Hoặc tạm thời cho phép tất cả để test dễ dàng
+            )
+            .csrf(csrf -> csrf.disable())
+            .headers(h -> h.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
+
         return http.build();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-        UserDetails user = User.builder()
-                .username("admin")
-                .password(passwordEncoder.encode("admin123"))
-                .roles("USER")
-                .build();
-        return new InMemoryUserDetailsManager(user);
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }
