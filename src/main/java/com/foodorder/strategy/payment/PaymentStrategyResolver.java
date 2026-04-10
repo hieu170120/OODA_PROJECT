@@ -1,4 +1,4 @@
-package com.foodorder.strategy;
+package com.foodorder.strategy.payment;
 
 import com.foodorder.model.enums.PaymentMethod;
 import org.springframework.stereotype.Component;

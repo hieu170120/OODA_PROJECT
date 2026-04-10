@@ -13,8 +13,8 @@ import com.foodorder.model.enums.OrderStatus;
 import com.foodorder.model.enums.PaymentMethod;
 import com.foodorder.model.enums.PaymentStatus;
 import com.foodorder.repository.OrderJpaRepository;
-import com.foodorder.strategy.PaymentStrategy;
-import com.foodorder.strategy.PaymentStrategyResolver;
+import com.foodorder.strategy.payment.PaymentStrategy;
+import com.foodorder.strategy.payment.PaymentStrategyResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

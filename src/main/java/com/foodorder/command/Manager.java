@@ -33,4 +33,12 @@ public class Manager {
             System.out.println("No actions to redo.");
         }
     }
+
+    public boolean canUndo() {
+        return !undoStack.isEmpty();
+    }
+
+    public boolean canRedo() {
+        return !redoStack.isEmpty();
+    }
 }
