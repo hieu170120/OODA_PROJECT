@@ -1,5 +1,8 @@
 package com.foodorder.model;
 
+import com.foodorder.specification.EligibilityRule;
+import com.foodorder.strategy.coupon.DiscountStrategy;
+
 import java.time.LocalDateTime;
 
 public class Coupon {
@@ -10,6 +13,8 @@ public class Coupon {
     private boolean percentage;
     private LocalDateTime validFrom;
     private LocalDateTime validUntil;
+    private DiscountStrategy discountStrategy;
+    private EligibilityRule eligibilityRule;
 
     public Coupon() {
     }
@@ -25,16 +30,48 @@ public class Coupon {
     }
 
     public boolean isValid(Order order) {
+        if (order == null) {
+            return false;
+        }
+
+        if (eligibilityRule != null) {
+            return eligibilityRule.isSatisfiedBy(order);
+        }
+
         LocalDateTime now = LocalDateTime.now();
-        if (now.isBefore(validFrom) || now.isAfter(validUntil)) {
+        if (validFrom != null && now.isBefore(validFrom)) {
             return false;
         }
-        
-        if (order != null && order.getSubTotal() < minOrderValue) {
+        if (validUntil != null && now.isAfter(validUntil)) {
             return false;
         }
-        
+
+        if (order.calculateSubtotalAmount() < minOrderValue) {
+            return false;
+        }
+
         return true;
+    }
+
+    public double calculateDiscount(Order order) {
+        if (!isValid(order)) {
+            return 0;
+        }
+
+        double discount;
+        if (discountStrategy != null) {
+            discount = discountStrategy.calculateDiscount(order);
+        } else if (percentage) {
+            discount = order.calculateSubtotalAmount() * (discountValue / 100.0);
+        } else {
+            discount = discountValue;
+        }
+
+        if (discount < 0) {
+            return 0;
+        }
+
+        return Math.min(discount, order.calculateSubtotalAmount());
     }
 
     public String getCouponId() {
@@ -91,5 +128,21 @@ public class Coupon {
 
     public void setValidUntil(LocalDateTime validUntil) {
         this.validUntil = validUntil;
+    }
+
+    public DiscountStrategy getDiscountStrategy() {
+        return discountStrategy;
+    }
+
+    public void setDiscountStrategy(DiscountStrategy discountStrategy) {
+        this.discountStrategy = discountStrategy;
+    }
+
+    public EligibilityRule getEligibilityRule() {
+        return eligibilityRule;
+    }
+
+    public void setEligibilityRule(EligibilityRule eligibilityRule) {
+        this.eligibilityRule = eligibilityRule;
     }
 }

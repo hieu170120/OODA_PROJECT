@@ -113,7 +113,7 @@
                 <a href="${pageContext.request.contextPath}/admin/dishes" class="nav-link active"><i class="fa-solid fa-burger"></i> Món ăn</a>
             </li>
             <li class="nav-item">
-                <a href="#" class="nav-link"><i class="fa-solid fa-ticket"></i> Khuyến mãi</a>
+                <a href="${pageContext.request.contextPath}/admin/orders" class="nav-link"><i class="fa-solid fa-receipt"></i> Đơn hàng</a>
             </li>
             <li class="nav-item mt-5">
                 <a href="#" class="nav-link text-danger"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a>
@@ -127,11 +127,11 @@
             <h2 style="font-weight: 700; color: #111827;">Danh sách Món ăn</h2>
 
             <div>
-                <a href="${pageContext.request.contextPath}/admin/undo" class="btn btn-outline-secondary me-2">
+                <a href="${pageContext.request.contextPath}/admin/undo" class="btn btn-outline-secondary me-2 ${canUndo ? '' : 'disabled'}" aria-disabled="${not canUndo}">
                     <i class="fa-solid fa-rotate-left"></i> Undo
                 </a>
 
-                <a href="${pageContext.request.contextPath}/admin/redo" class="btn btn-outline-secondary me-3">
+                <a href="${pageContext.request.contextPath}/admin/redo" class="btn btn-outline-secondary me-3 ${canRedo ? '' : 'disabled'}" aria-disabled="${not canRedo}">
                     <i class="fa-solid fa-rotate-right"></i> Redo
                 </a>
 

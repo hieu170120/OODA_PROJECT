@@ -2,7 +2,7 @@ package com.foodorder.model;
 
 import com.foodorder.model.enums.PaymentMethod;
 import com.foodorder.model.enums.PaymentStatus;
-import com.foodorder.strategy.PaymentStrategy;
+import com.foodorder.strategy.payment.PaymentStrategy;
 
 import java.time.LocalDateTime;
 

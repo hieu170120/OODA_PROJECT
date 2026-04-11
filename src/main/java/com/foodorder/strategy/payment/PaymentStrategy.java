@@ -1,4 +1,4 @@
-package com.foodorder.strategy;
+package com.foodorder.strategy.payment;
 
 public interface PaymentStrategy {
 

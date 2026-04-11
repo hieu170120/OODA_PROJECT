@@ -38,15 +38,25 @@ public class Order {
         this.notifications = new ArrayList<>();
     }
 
-    public double calculateTotal() {
-        double total = subTotal + shippingFee;
-        
-        if (coupon != null && coupon.isValid(this)) {
-            if (coupon.isPercentage()) {
-                total -= total * (coupon.getDiscountValue() / 100.0);
-            } else {
-                total -= coupon.getDiscountValue();
+    public double calculateSubtotalAmount() {
+        if (orderItems == null || orderItems.isEmpty()) {
+            return Math.max(subTotal, 0);
+        }
+
+        double total = 0;
+        for (OrderItem item : orderItems) {
+            if (item != null) {
+                total += item.calculateSubTotal();
             }
+        }
+        return total;
+    }
+
+    public double calculateTotal() {
+        double total = calculateSubtotalAmount() + shippingFee;
+
+        if (coupon != null) {
+            total -= coupon.calculateDiscount(this);
             if (total < 0) {
                 total = 0;
             }
