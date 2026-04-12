@@ -58,8 +58,8 @@
                     <p class="mb-1"><strong>Mã giao dịch:</strong> <code>${order.payment.paymentId}</code></p>
                     <p class="mb-1"><strong>Phương thức:</strong>
                         <c:choose>
-                            <c:when test="${order.payment.paymentMethod.name() == 'COD'}">Thanh toán khi nhận (COD)</c:when>
-                            <c:when test="${order.payment.paymentMethod.name() == 'BANKING'}">Chuyển khoản ngân hàng</c:when>
+                            <c:when test="${order.payment.paymentMethod eq 'COD'}">Thanh toán khi nhận (COD)</c:when>
+                            <c:when test="${order.payment.paymentMethod eq 'BANKING'}">Chuyển khoản ngân hàng</c:when>
                             <c:otherwise>${order.payment.paymentMethod}</c:otherwise>
                         </c:choose>
                     </p>

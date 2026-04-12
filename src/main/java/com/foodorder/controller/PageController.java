@@ -6,7 +6,6 @@ import com.foodorder.decorator.Topping;
 import com.foodorder.model.Customer;
 import com.foodorder.model.Order;
 import com.foodorder.model.OrderItem;
-import com.foodorder.model.enums.PaymentMethod;
 import com.foodorder.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -96,7 +95,7 @@ public class PageController {
     public String processCheckout(
             @RequestParam("customerName") String customerName,
             @RequestParam("address") String address,
-            @RequestParam(value = "paymentMethod", defaultValue = "COD") PaymentMethod paymentMethod,
+            @RequestParam(value = "paymentMethod", defaultValue = "COD") String paymentMethod,
             Model model
     ) {
         if (tempCart.isEmpty()) {

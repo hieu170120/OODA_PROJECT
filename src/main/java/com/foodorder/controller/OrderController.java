@@ -8,7 +8,6 @@ import com.foodorder.model.Customer;
 import com.foodorder.model.Order;
 import com.foodorder.model.OrderItem;
 import com.foodorder.model.enums.OrderStatus;
-import com.foodorder.model.enums.PaymentMethod;
 import com.foodorder.model.enums.PaymentStatus;
 import com.foodorder.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +69,7 @@ public class OrderController {
 
         // Gọi Service để tạo đơn hàng. Service sẽ dùng OrderDirector và DeliveryOrderBuilder
         Order createdOrder = orderService.createDeliveryOrder(
-                customer, items, deliveryAddress, noCoupon, PaymentMethod.COD
+                customer, items, deliveryAddress, noCoupon, "COD"
         );
 
         // 5. Tính tổng tiền để chứng minh Decorator hoạt động đúng
