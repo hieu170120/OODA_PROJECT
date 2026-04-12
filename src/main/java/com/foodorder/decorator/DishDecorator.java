@@ -16,4 +16,14 @@ public abstract class DishDecorator implements IDish {
     public double getPrice() {
         return wrappee.getPrice();
     }
+
+    @Override
+    public String getImageUrl() {
+        return wrappee.getImageUrl();
+    }
+
+    @Override
+    public String getDescription() {
+        return wrappee.getDescription();
+    }
 }
