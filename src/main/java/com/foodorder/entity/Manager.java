@@ -5,7 +5,7 @@ import lombok.*;
 
 @Entity
 @Table(name = "managers")
-@PrimaryKeyJoinColumn(name = "manager_id") // Khóa chính của bảng này sẽ nối với Khóa chính bảng users
+@PrimaryKeyJoinColumn(name = "manager_id")
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class Manager extends User {

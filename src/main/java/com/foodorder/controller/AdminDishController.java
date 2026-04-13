@@ -1,6 +1,9 @@
 package com.foodorder.controller;
 
-import com.foodorder.command.Manager; // <--- Import thêm Manager
+import com.foodorder.command.Manager; 
+import com.foodorder.dto.DishRequestDTO;
+import com.foodorder.dto.DishResponseDTO;
+import com.foodorder.dto.OrderResponseDTO;
 import com.foodorder.entity.Dish;
 import com.foodorder.model.enums.OrderStatus;
 import com.foodorder.service.DishService;
@@ -10,18 +13,26 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Controller
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 public class AdminDishController {
 
     private final DishService dishService;
-    private final Manager commandManager; // <--- Tiêm Manager trực tiếp vào Controller
+    private final Manager commandManager; 
     private final OrderService orderService;
 
     @GetMapping("/dishes")
     public String showDishList(Model model) {
-        model.addAttribute("dishes", dishService.getAllDishes());
+        // Ánh xạ danh sách Entity thành DTO trước khi đẩy ra View
+        List<DishResponseDTO> dishDTOs = dishService.getAllDishes().stream()
+                .map(DishResponseDTO::fromEntity)
+                .collect(Collectors.toList());
+
+        model.addAttribute("dishes", dishDTOs);
         model.addAttribute("canUndo", commandManager.canUndo());
         model.addAttribute("canRedo", commandManager.canRedo());
         return "admin/dish-list"; 
@@ -29,7 +40,12 @@ public class AdminDishController {
 
     @GetMapping("/orders")
     public String showOrderList(Model model) {
-        model.addAttribute("orders", orderService.getAllOrders());
+        // Chuyển Domain Model → DTO trước khi đẩy ra View (3-Tier)
+        List<OrderResponseDTO> orderDTOs = orderService.getAllOrders().stream()
+                .map(OrderResponseDTO::fromDomain)
+                .collect(Collectors.toList());
+
+        model.addAttribute("orders", orderDTOs);
         model.addAttribute("statuses", OrderStatus.values());
         return "admin/orders";
     }
@@ -44,14 +60,16 @@ public class AdminDishController {
     // --- CÁC HÀM CỦA DISH SERVICE ---
 
     @PostMapping("/add")
-    public String addDish(@ModelAttribute Dish dish) {
-        dishService.addDish(dish);
+    public String addDish(@ModelAttribute DishRequestDTO dishDTO) {
+        // Chuyển DTO thành Entity rồi mới đưa vào Service
+        dishService.addDish(dishDTO.toEntity());
         return "redirect:/admin/dishes"; 
     }
 
     @PostMapping("/update/{id}")
-    public String updateDish(@PathVariable String id, @ModelAttribute Dish updatedDish) {
-        dishService.updateDish(id, updatedDish);
+    public String updateDish(@PathVariable String id, @ModelAttribute DishRequestDTO updatedDishDTO) {
+        // Chuyển DTO thành Entity rồi mới đưa vào Service
+        dishService.updateDish(id, updatedDishDTO.toEntity());
         return "redirect:/admin/dishes";
     }
 
@@ -65,14 +83,12 @@ public class AdminDishController {
 
     @GetMapping("/undo")
     public String undoAction() {
-        // Gọi trực tiếp Manager để Undo, không làm phiền DishService
         commandManager.undoLastAction();
         return "redirect:/admin/dishes";
     }
 
     @GetMapping("/redo")
     public String redoAction() {
-        // Gọi trực tiếp Manager để Redo
         commandManager.redoLastAction();
         return "redirect:/admin/dishes";
     }
