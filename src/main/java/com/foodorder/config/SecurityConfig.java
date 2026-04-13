@@ -14,7 +14,7 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 // Cập nhật lại danh sách các URL được phép truy cập
-                .requestMatchers("/", "/home", "/login", "/menu", "/cart", "/cart/**", "/api/v1/orders/**").permitAll()
+                .requestMatchers("/", "/home", "/login", "/menu", "/cart", "/cart/**", "/api/v1/orders/**", "/admin/login", "/admin/logout").permitAll()
                 .anyRequest().permitAll()
             )
             .csrf(csrf -> csrf.disable())

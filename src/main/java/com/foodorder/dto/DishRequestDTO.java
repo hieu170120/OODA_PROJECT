@@ -13,11 +13,11 @@ public class DishRequestDTO {
     private String description;
 
     public Dish toEntity() {
-        Dish dish = new Dish();
-        dish.setName(this.name);
-        dish.setPrice(this.price);
-        dish.setImageUrl(this.imageUrl);
-        dish.setDescription(this.description);
-        return dish;
+        return Dish.builder()
+                    .setName(this.name)
+                    .setPrice(this.price)
+                    .setImageUrl(this.imageUrl)
+                    .setDescription(this.description)
+                    .build();
     }
 }
