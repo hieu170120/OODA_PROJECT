@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,14 +47,19 @@ public class AdminDishController {
                 .collect(Collectors.toList());
 
         model.addAttribute("orders", orderDTOs);
-        model.addAttribute("statuses", OrderStatus.values());
+        model.addAttribute("selectableByStatus", orderService.getOrderStatusSelectOptions());
         return "admin/orders";
     }
 
     @PostMapping("/orders/{orderId}/status")
     public String updateOrderStatus(@PathVariable String orderId,
-                                    @RequestParam("status") OrderStatus status) {
-        orderService.updateOrderStatus(orderId, status);
+                                    @RequestParam("status") OrderStatus status,
+                                    RedirectAttributes redirectAttributes) {
+        try {
+            orderService.updateOrderStatus(orderId, status);
+        } catch (IllegalStateException | IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        }
         return "redirect:/admin/orders";
     }
 

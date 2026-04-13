@@ -12,6 +12,7 @@ import com.foodorder.model.Payment;
 import com.foodorder.model.enums.OrderStatus;
 import com.foodorder.model.enums.PaymentStatus;
 import com.foodorder.repository.OrderJpaRepository;
+import com.foodorder.state.order.OrderStateFactory;
 import com.foodorder.strategy.payment.PaymentStrategy;
 import com.foodorder.strategy.payment.PaymentStrategyResolver;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -27,11 +30,19 @@ public class OrderService {
 
     private final OrderJpaRepository orderRepository;
     private final PaymentStrategyResolver paymentStrategyResolver;
+    private final OrderStateFactory orderStateFactory;
 
     @Autowired
-    public OrderService(OrderJpaRepository orderRepository, PaymentStrategyResolver paymentStrategyResolver) {
+    public OrderService(OrderJpaRepository orderRepository,
+                        PaymentStrategyResolver paymentStrategyResolver,
+                        OrderStateFactory orderStateFactory) {
         this.orderRepository = orderRepository;
         this.paymentStrategyResolver = paymentStrategyResolver;
+        this.orderStateFactory = orderStateFactory;
+    }
+
+    public Map<OrderStatus, Set<OrderStatus>> getOrderStatusSelectOptions() {
+        return orderStateFactory.selectableGrouped();
     }
 
     /**
@@ -90,6 +101,8 @@ public class OrderService {
             throw new IllegalArgumentException("Trạng thái đơn hàng không hợp lệ.");
         }
         OrderRecordEntity record = findRecordById(orderId);
+        OrderStatus current = record.getOrderStatus() != null ? record.getOrderStatus() : OrderStatus.RECEIVED;
+        orderStateFactory.forStatus(current).validateTransition(newStatus);
         record.setOrderStatus(newStatus);
         orderRepository.save(record);
         return mapToDomain(record);

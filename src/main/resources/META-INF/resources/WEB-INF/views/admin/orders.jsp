@@ -114,6 +114,13 @@
         <h2 style="font-weight: 700; color: #111827;">Danh sách Đơn hàng</h2>
     </div>
 
+    <c:if test="${not empty errorMessage}">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            ${errorMessage}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </c:if>
+
     <div class="table-card">
         <table class="table table-hover border-bottom">
             <thead>
@@ -147,7 +154,7 @@
                     <td>
                         <form action="${pageContext.request.contextPath}/admin/orders/${order.orderId}/status" method="post" class="d-flex gap-2">
                             <select name="status" class="form-select form-select-sm" style="min-width: 180px;">
-                                <c:forEach items="${statuses}" var="statusOpt">
+                                <c:forEach items="${selectableByStatus[order.status]}" var="statusOpt">
                                     <option value="${statusOpt}" ${statusOpt == order.status ? 'selected' : ''}>${statusOpt}</option>
                                 </c:forEach>
                             </select>
