@@ -19,6 +19,7 @@ public class RemoveDishCommand implements ICommand {
     @Override
     public void undo() {
         System.out.println("Restoring dish: " + dish.getName());
+        dish.setDishId(null);
         repository.save(dish);
     }
 }

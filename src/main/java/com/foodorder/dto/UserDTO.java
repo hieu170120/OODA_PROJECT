@@ -10,6 +10,7 @@ public class UserDTO {
     private String userId;
     private String fullName;
     private String email;
+    private String role;
 
     public static UserDTO fromEntity(User user) {
         if (user == null) return null;
@@ -17,6 +18,7 @@ public class UserDTO {
         dto.setUserId(user.getUserId());
         dto.setFullName(user.getFullName());
         dto.setEmail(user.getEmail());
+        dto.setRole("USER");
         return dto;
     }
 }
