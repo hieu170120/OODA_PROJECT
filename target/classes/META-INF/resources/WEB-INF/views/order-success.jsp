@@ -76,6 +76,17 @@
                 <div class="col-8 text-end text-muted mt-1">Phí giao hàng:</div>
                 <div class="col-4 text-end fw-bold mt-1"><fmt:formatNumber value="${order.shippingFee}" type="number" pattern="###,###"/>đ</div>
 
+                <c:if test="${appliedDiscount > 0}">
+                    <div class="col-8 text-end text-muted mt-1">
+                        Giảm giá
+                        <c:if test="${order.coupon != null}">
+                            (<span class="fw-bold">${order.coupon.couponCode}</span>)
+                        </c:if>
+                        :
+                    </div>
+                    <div class="col-4 text-end fw-bold mt-1 text-success">-<fmt:formatNumber value="${appliedDiscount}" type="number" pattern="###,###"/>đ</div>
+                </c:if>
+
                 <div class="col-8 text-end fs-5 mt-2 fw-bold text-danger">TỔNG CỘNG:</div>
                 <div class="col-4 text-end fs-5 mt-2 fw-bold text-danger"><fmt:formatNumber value="${order.calculateTotal()}" type="number" pattern="###,###"/>đ</div>
             </div>

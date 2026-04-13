@@ -6,9 +6,11 @@ import com.foodorder.decorator.Topping;
 import com.foodorder.entity.Dish;
 import com.foodorder.entity.User;
 import com.foodorder.model.Customer;
+import com.foodorder.model.Coupon;
 import com.foodorder.model.Order;
 import com.foodorder.model.OrderItem;
 import com.foodorder.model.enums.PaymentMethod;
+import com.foodorder.service.CouponService;
 import com.foodorder.service.DishService;
 import com.foodorder.service.OrderService;
 import jakarta.servlet.http.HttpSession;
@@ -24,17 +26,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.time.LocalDateTime;
 
 @Controller
 public class PageController {
 
     private final OrderService orderService;
     private final DishService dishService;
+    private final CouponService couponService;
 
     @Autowired
-    public PageController(OrderService orderService, DishService dishService) {
+    public PageController(OrderService orderService, DishService dishService, CouponService couponService) {
         this.orderService = orderService;
         this.dishService = dishService;
+        this.couponService = couponService;
     }
 
     @GetMapping("/")
@@ -71,6 +76,22 @@ public class PageController {
 
     private int calculateCartCount(List<OrderItem> cart) {
         return cart.stream().mapToInt(OrderItem::getQuantity).sum();
+    }
+
+    private Order buildPreviewOrder(List<OrderItem> cart) {
+        Order previewOrder = new Order();
+        previewOrder.setOrderTime(LocalDateTime.now());
+        previewOrder.setOrderItems(cart);
+        return previewOrder;
+    }
+
+    private void populateCartModel(Model model, User loggedInUser, List<OrderItem> cart, String enteredCouponCode) {
+        model.addAttribute("user", loggedInUser);
+        model.addAttribute("cartItems", cart);
+        model.addAttribute("cartTotal", calculateCartTotal(cart));
+        model.addAttribute("cartCount", calculateCartCount(cart));
+        model.addAttribute("couponOptions", couponService.getCouponOptions(buildPreviewOrder(cart)));
+        model.addAttribute("enteredCouponCode", enteredCouponCode == null ? "" : enteredCouponCode);
     }
 
     @GetMapping("/menu")
@@ -155,11 +176,7 @@ public class PageController {
         }
 
         List<OrderItem> cart = getCartFromSession(session);
-
-        model.addAttribute("user", loggedInUser);
-        model.addAttribute("cartItems", cart);
-        model.addAttribute("cartTotal", calculateCartTotal(cart));
-        model.addAttribute("cartCount", calculateCartCount(cart));
+        populateCartModel(model, loggedInUser, cart, "");
 
         return "cart";
     }
@@ -238,6 +255,7 @@ public class PageController {
     public String processCheckout(
             @RequestParam(value = "customerName", required = false) String customerName,
             @RequestParam("address") String address,
+            @RequestParam(value = "couponCode", required = false) String couponCode,
             @RequestParam(value = "paymentMethod", defaultValue = "COD") PaymentMethod paymentMethod,
             Model model,
             HttpSession session
@@ -257,19 +275,32 @@ public class PageController {
         customer.setUserId(loggedInUser.getUserId() != null ? loggedInUser.getUserId() : "CUST-" + System.currentTimeMillis());
         customer.setFullName((customerName != null && !customerName.isBlank()) ? customerName : loggedInUser.getFullName());
 
+        Order previewOrder = buildPreviewOrder(cart);
+
+        Coupon coupon;
+        try {
+            coupon = couponService.resolveCoupon(couponCode, previewOrder);
+        } catch (IllegalArgumentException ex) {
+            populateCartModel(model, loggedInUser, cart, couponCode);
+            model.addAttribute("checkoutError", ex.getMessage());
+            return "cart";
+        }
+
         Order completedOrder;
         try {
             // Builder & Strategy Pattern giữ nguyên
-            completedOrder = orderService.createDeliveryOrder(customer, cart, address, null, paymentMethod);
+            completedOrder = orderService.createDeliveryOrder(customer, cart, address, coupon, paymentMethod);
         } catch (IllegalArgumentException ex) {
-            model.addAttribute("user", loggedInUser);
-            model.addAttribute("cartItems", cart);
-            model.addAttribute("cartTotal", calculateCartTotal(cart));
+            populateCartModel(model, loggedInUser, cart, couponCode);
             model.addAttribute("checkoutError", ex.getMessage());
             return "cart";
         }
 
         model.addAttribute("order", completedOrder);
+        double appliedDiscount = completedOrder.getCoupon() != null
+                ? completedOrder.getCoupon().calculateDiscount(completedOrder)
+                : 0;
+        model.addAttribute("appliedDiscount", appliedDiscount);
 
         // Đặt thành công -> Xóa giỏ
         session.removeAttribute("CART");
