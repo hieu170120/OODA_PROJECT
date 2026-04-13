@@ -129,18 +129,14 @@
             <!-- Lặp qua các món trong giỏ -->
             <c:forEach items="${cartItems}" var="item">
                 <div class="cart-item position-relative" id="cart-item-${item.orderItemId}">
-                    <c:choose>
-                        <c:when test="${not empty item.dish.imageUrl}">
-                            <img src="${item.dish.imageUrl}" alt="${item.dish.name}" class="cart-item-img border">
-                        </c:when>
-                        <c:otherwise>
-                            <img src="https://placehold.co/80x80?text=No+Img" alt="No image" class="cart-item-img border opacity-50">
-                        </c:otherwise>
-                    </c:choose>
+
+                    <!-- DTO không có ảnh, dùng ảnh mặc định cho CartItem -->
+                    <img src="https://placehold.co/80x80?text=Dish" alt="No image" class="cart-item-img border opacity-50">
 
                     <div class="flex-grow-1">
                         <div class="d-flex justify-content-between align-items-start">
-                            <h5 class="fw-bold text-dark mb-1">${item.dish.name}</h5>
+                            <!-- Đổi từ item.dish.name sang item.dishName vì DTO đã phẳng hóa dữ liệu -->
+                            <h5 class="fw-bold text-dark mb-1">${item.dishName}</h5>
 
                             <!-- Form Xóa Món -->
                             <form action="${pageContext.request.contextPath}/cart/remove-item" method="post" class="m-0 p-0">
@@ -152,7 +148,8 @@
                         </div>
 
                         <div class="text-muted small mb-2 d-flex flex-wrap gap-1">
-                            <span class="badge bg-light text-dark border"><i class="bi bi-tag"></i> <fmt:formatNumber value="${item.unitPriceAtPurchase}" type="number" pattern="###,###"/>đ /phần</span>
+                            <!-- Đổi từ item.unitPriceAtPurchase sang item.unitPrice theo DTO -->
+                            <span class="badge bg-light text-dark border"><i class="bi bi-tag"></i> <fmt:formatNumber value="${item.unitPrice}" type="number" pattern="###,###"/>đ /phần</span>
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center mt-2">
@@ -166,7 +163,8 @@
                                     <i class="bi bi-plus"></i>
                                 </button>
                             </div>
-                            <h5 class="mb-0 fw-bold text-danger" id="subtotal-${item.orderItemId}"><fmt:formatNumber value="${item.calculateSubTotal()}" type="number" pattern="###,###"/>đ</h5>
+                            <!-- Đổi từ hàm item.calculateSubTotal() sang thuộc tính item.subTotal của DTO -->
+                            <h5 class="mb-0 fw-bold text-danger" id="subtotal-${item.orderItemId}"><fmt:formatNumber value="${item.subTotal}" type="number" pattern="###,###"/>đ</h5>
                         </div>
                     </div>
                 </div>

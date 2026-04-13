@@ -53,6 +53,7 @@
             color: #6c757d;
             display: -webkit-box;
             -webkit-line-clamp: 2;
+            line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
             margin-bottom: 10px;
@@ -88,7 +89,7 @@
 
             <a href="${pageContext.request.contextPath}/cart" class="btn btn-warning me-3 position-relative d-flex align-items-center shadow-sm">
                 <i class="bi bi-cart3 fs-5 me-1"></i> <span class="fw-bold d-none d-md-inline">Giỏ Hàng</span>
-                <span id="cartCountBadge" class="position-absolute translate-middle badge rounded-pill bg-danger cart-badge" style="${cartCount == 0 ? 'display:none;' : ''}">
+                <span id="cartCountBadge" class="position-absolute translate-middle badge rounded-pill bg-danger cart-badge" <c:if test="${cartCount == 0}">style="display:none;"</c:if>>
                     ${cartCount}
                     <span class="visually-hidden">món trong giỏ</span>
                 </span>
@@ -134,7 +135,7 @@
                             <!-- Bấm nút này sẽ mở Modal kèm dữ liệu món ăn -->
                             <button type="button" class="btn btn-sm btn-primary rounded-circle shadow-sm"
                                     style="width: 35px; height: 35px;"
-                                    onclick="openDishModal('${dish.name}', ${dish.price}, '${dish.imageUrl}')"
+                                    onclick="openDishModal('${dish.name}', '${dish.price}', '${dish.imageUrl}')"
                                     title="Thêm vào giỏ">
                                 <i class="bi bi-plus-lg fs-5"></i>
                             </button>
@@ -266,7 +267,7 @@
     }
 
     function calculateModalTotal() {
-        let total = currentBasePrice;
+        let total = parseInt(currentBasePrice) || 0;
         checkboxes.forEach(cb => {
             if(cb.checked) total += parseInt(cb.dataset.price);
         });

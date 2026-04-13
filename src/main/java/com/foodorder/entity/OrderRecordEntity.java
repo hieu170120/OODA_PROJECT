@@ -12,9 +12,6 @@ import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 
-/**
- * Snapshot đơn hàng để persist bằng JPA mà không ràng buộc model Order thuần OOP.
- */
 @Entity
 @Table(name = "order_records")
 public class OrderRecordEntity {

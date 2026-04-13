@@ -42,7 +42,7 @@
             <div class="row mb-4">
                 <div class="col-sm-6 mb-3 mb-sm-0">
                     <h6 class="text-muted mb-2"><i class="bi bi-person"></i> Người nhận:</h6>
-                    <p class="fw-bold mb-0">${order.customer.fullName}</p>
+                    <p class="fw-bold mb-0">${order.customerName}</p>
                 </div>
                 <div class="col-sm-6">
                     <h6 class="text-muted mb-2"><i class="bi bi-clock"></i> Dự kiến giao lúc:</h6>
@@ -60,10 +60,10 @@
                 <c:forEach items="${order.orderItems}" var="item">
                     <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2 last-no-border">
                         <div>
-                            <div class="fw-bold">${item.dish.name}</div>
+                            <div class="fw-bold">${item.dishName}</div>
                             <small class="text-muted">Số lượng: ${item.quantity}</small>
                         </div>
-                        <div class="fw-bold text-dark"><fmt:formatNumber value="${item.calculateSubTotal()}" type="number" pattern="###,###"/>đ</div>
+                        <div class="fw-bold text-dark"><fmt:formatNumber value="${item.subTotal}" type="number" pattern="###,###"/>đ</div>
                     </div>
                 </c:forEach>
             </div>
@@ -77,11 +77,11 @@
                 <div class="col-4 text-end fw-bold mt-1"><fmt:formatNumber value="${order.shippingFee}" type="number" pattern="###,###"/>đ</div>
 
                 <div class="col-8 text-end fs-5 mt-2 fw-bold text-danger">TỔNG CỘNG:</div>
-                <div class="col-4 text-end fs-5 mt-2 fw-bold text-danger"><fmt:formatNumber value="${order.calculateTotal()}" type="number" pattern="###,###"/>đ</div>
+                <div class="col-4 text-end fs-5 mt-2 fw-bold text-danger"><fmt:formatNumber value="${order.totalAmount}" type="number" pattern="###,###"/>đ</div>
             </div>
 
             <!-- Thông tin thanh toán (Strategy Pattern) -->
-            <c:if test="${order.payment != null}">
+            <c:if test="${order.paymentMethod != null}">
                 <div class="alert alert-secondary mt-4 mb-0 border-0" role="alert">
                     <h6 class="alert-heading text-primary mb-3"><i class="bi bi-credit-card"></i> Thông tin thanh toán</h6>
                     <div class="row">
@@ -89,28 +89,28 @@
                             <span class="text-muted small d-block">Phương thức:</span>
                             <strong>
                                 <c:choose>
-                                    <c:when test="${order.payment.paymentMethod.name() == 'COD'}">Thanh toán khi nhận (COD)</c:when>
-                                    <c:when test="${order.payment.paymentMethod.name() == 'BANKING'}">Chuyển khoản (Banking)</c:when>
-                                    <c:otherwise>${order.payment.paymentMethod}</c:otherwise>
+                                    <c:when test="${order.paymentMethod.name() == 'COD'}">Thanh toán khi nhận (COD)</c:when>
+                                    <c:when test="${order.paymentMethod.name() == 'BANKING'}">Chuyển khoản (Banking)</c:when>
+                                    <c:otherwise>${order.paymentMethod}</c:otherwise>
                                 </c:choose>
                             </strong>
                         </div>
                         <div class="col-sm-6 mb-2">
                             <span class="text-muted small d-block">Trạng thái:</span>
                             <c:choose>
-                                <c:when test="${order.payment.paymentStatus.name() == 'COMPLETED'}">
+                                <c:when test="${order.paymentStatus.name() == 'COMPLETED'}">
                                     <span class="badge bg-success">Đã thanh toán</span>
                                 </c:when>
-                                <c:when test="${order.payment.paymentStatus.name() == 'PENDING'}">
+                                <c:when test="${order.paymentStatus.name() == 'PENDING'}">
                                     <span class="badge bg-warning text-dark">Chờ thanh toán</span>
                                 </c:when>
                                 <c:otherwise>
-                                    <span class="badge bg-danger">${order.payment.paymentStatus}</span>
+                                    <span class="badge bg-danger">${order.paymentStatus}</span>
                                 </c:otherwise>
                             </c:choose>
                         </div>
                         <div class="col-12 mt-1">
-                            <span class="text-muted small">Mã GD (Payment ID):</span> <code class="bg-white px-2 py-1 rounded">${order.payment.paymentId}</code>
+                            <span class="text-muted small">Mã GD (Payment ID):</span> <code class="bg-white px-2 py-1 rounded">${order.paymentId}</code>
                         </div>
                     </div>
                 </div>

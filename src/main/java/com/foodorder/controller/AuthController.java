@@ -1,5 +1,6 @@
 package com.foodorder.controller;
 
+import com.foodorder.dto.UserDTO;
 import com.foodorder.entity.User;
 import com.foodorder.service.UserService;
 import jakarta.servlet.http.HttpSession;
@@ -23,7 +24,9 @@ public class AuthController {
                                Model model) {
         User user = userService.authenticate(email, password);
         if (user != null) {
-            session.setAttribute("LOGGED_IN_USER", user);
+            // Chuyển Entity User thành DTO, tránh lưu Entity (chứa Password, db properties) lên session
+            UserDTO userDTO = UserDTO.fromEntity(user);
+            session.setAttribute("LOGGED_IN_USER", userDTO);
             return "redirect:/menu";
         } else {
             model.addAttribute("loginError", "Email hoặc mật khẩu không đúng.");

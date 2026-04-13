@@ -67,7 +67,7 @@
 
                                     <div class="flex-grow-1">
                                         <h6 class="mb-1 fw-bold text-dark">${dish.name}</h6>
-                                        <p class="text-muted small mb-1" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${dish.description}</p>
+                                        <p class="text-muted small mb-1" style="display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${dish.description}</p>
                                         <span class="text-danger fw-bold"><fmt:formatNumber value="${dish.price}" type="number" pattern="###,###"/> đ</span>
                                     </div>
                                 </div>

@@ -131,15 +131,15 @@
             <c:forEach items="${orders}" var="order">
                 <tr>
                     <td><code>${order.orderId}</code></td>
-                    <td>${order.customer.fullName}</td>
+                    <td>${order.customerName}</td>
                     <td>${order.shippingAddress}</td>
                     <td>
-                        <fmt:formatNumber value="${order.calculateTotal()}" type="number" groupingUsed="true" maxFractionDigits="0"/> đ
+                        <fmt:formatNumber value="${order.totalAmount}" type="number" groupingUsed="true" maxFractionDigits="0"/> đ
                     </td>
                     <td>
                         <c:choose>
-                            <c:when test="${order.payment != null && order.payment.paymentStatus != null}">
-                                ${order.payment.paymentStatus}
+                            <c:when test="${order.paymentStatus != null}">
+                                ${order.paymentStatus}
                             </c:when>
                             <c:otherwise>N/A</c:otherwise>
                         </c:choose>
