@@ -13,6 +13,7 @@ public class AddDishCommand implements ICommand {
     @Override   
     public void execute() {
         System.out.println("Adding dish: " + dish.getName());
+        dish.setDishId(null);
         repository.save(dish);
     }
 

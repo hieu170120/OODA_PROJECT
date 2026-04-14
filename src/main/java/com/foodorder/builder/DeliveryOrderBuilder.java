@@ -44,7 +44,6 @@ public class DeliveryOrderBuilder implements IOrderBuilder {
     public void buildDeliveryInfo(String address, LocalDateTime pickupTime) {
         this.result.setShippingAddress(address);
         this.result.setEstimatedPickupTime(pickupTime);
-        // Có thể tính phí ship dựa trên khoảng cách, ở đây fix cứng 1 khoản
         this.result.setShippingFee(15000.0); 
     }
 
@@ -58,7 +57,7 @@ public class DeliveryOrderBuilder implements IOrderBuilder {
     @Override
     public Order getResult() {
         Order finalOrder = this.result;
-        this.reset(); // Sẵn sàng cho lần build tiếp theo
+        this.reset(); 
         return finalOrder;
     }
 }

@@ -8,12 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Repository giả lập (In-Memory Database) sử dụng HashMap.
- * Cách này giúp bạn giữ các class Model (Order, Customer...) là PURE JAVA (Java thuần)
- * để tập trung 100% vào việc học OOP và Design Pattern mà không bị vướng bận 
- * bởi các Annotation của JPA/Hibernate (@Entity, @Table, @Id...).
- */
 @Repository
 public class OrderRepository {
     

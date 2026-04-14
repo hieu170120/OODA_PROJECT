@@ -16,13 +16,13 @@ public class UpdateDishCommand implements ICommand {
         this.dishInDB = dishInDB;
         this.newDish = newDish;
 
-        this.oldDish = new Dish(
-            dishInDB.getDishId(), 
-            dishInDB.getName(), 
-            dishInDB.getPrice(), 
-            dishInDB.getImageUrl(),
-            dishInDB.getDescription()
-        );
+        this.oldDish = Dish.builder()
+                    .setDishId(dishInDB.getDishId())
+                    .setName(dishInDB.getName())
+                    .setPrice(dishInDB.getPrice())
+                    .setImageUrl(dishInDB.getImageUrl())
+                    .setDescription(dishInDB.getDescription())
+                    .build();
     }
 
     @Override   

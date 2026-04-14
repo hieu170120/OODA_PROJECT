@@ -13,9 +13,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                // Cho phép tất cả mọi người truy cập vào các trang này mà không cần đăng nhập
-                .requestMatchers("/", "/home", "/login", "/order", "/order/add-item", "/order/checkout", "/api/v1/orders/**").permitAll()
-                .anyRequest().permitAll() // Hoặc tạm thời cho phép tất cả để test dễ dàng
+                // Cập nhật lại danh sách các URL được phép truy cập
+                .requestMatchers("/", "/home", "/login", "/menu", "/cart", "/cart/**", "/api/v1/orders/**", "/admin/login", "/admin/logout").permitAll()
+                .anyRequest().permitAll()
             )
             .csrf(csrf -> csrf.disable())
             .headers(h -> h.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));

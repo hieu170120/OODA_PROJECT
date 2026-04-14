@@ -1,6 +1,5 @@
 package com.foodorder.model;
 
-import com.foodorder.model.enums.PaymentMethod;
 import com.foodorder.model.enums.PaymentStatus;
 import com.foodorder.strategy.payment.PaymentStrategy;
 
@@ -10,7 +9,8 @@ public class Payment {
     private String paymentId;
     private Order order;
     private double amount;
-    private PaymentMethod paymentMethod;
+    /** Mã phương thức (chuỗi), khớp {@link com.foodorder.strategy.PaymentStrategy#getMethodCode()}. */
+    private String paymentMethod;
     private PaymentStatus paymentStatus;
     private LocalDateTime paidAt;
     private PaymentStrategy paymentStrategy;
@@ -18,7 +18,7 @@ public class Payment {
     public Payment() {
     }
 
-    public Payment(String paymentId, Order order, double amount, PaymentMethod paymentMethod, PaymentStatus paymentStatus, LocalDateTime paidAt) {
+    public Payment(String paymentId, Order order, double amount, String paymentMethod, PaymentStatus paymentStatus, LocalDateTime paidAt) {
         this.paymentId = paymentId;
         this.order = order;
         this.amount = amount;
@@ -27,7 +27,7 @@ public class Payment {
         this.paidAt = paidAt;
     }
 
-    public Payment(String paymentId, Order order, double amount, PaymentMethod paymentMethod, PaymentStatus paymentStatus, LocalDateTime paidAt, PaymentStrategy paymentStrategy) {
+    public Payment(String paymentId, Order order, double amount, String paymentMethod, PaymentStatus paymentStatus, LocalDateTime paidAt, PaymentStrategy paymentStrategy) {
         this.paymentId = paymentId;
         this.order = order;
         this.amount = amount;
@@ -81,11 +81,11 @@ public class Payment {
         this.amount = amount;
     }
 
-    public PaymentMethod getPaymentMethod() {
+    public String getPaymentMethod() {
         return paymentMethod;
     }
 
-    public void setPaymentMethod(PaymentMethod paymentMethod) {
+    public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod;
     }
 
