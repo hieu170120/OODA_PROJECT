@@ -75,38 +75,6 @@ public class AdminDishController {
         return "admin/dish-list";
     }
 
-    @GetMapping("/orders")
-    public String showOrderList(Model model, HttpSession session) {
-        if (session.getAttribute("LOGGED_IN_ADMIN") == null) {
-            return "redirect:/admin/login";
-        }
-
-        List<OrderResponseDTO> orderDTOs = orderService.getAllOrders().stream()
-                .map(OrderResponseDTO::fromDomain)
-                .collect(Collectors.toList());
-
-        model.addAttribute("orders", orderDTOs);
-        model.addAttribute("selectableByStatus", orderService.getOrderStatusSelectOptions());
-        return "admin/orders";
-    }
-
-    @PostMapping("/orders/{orderId}/status")
-    public String updateOrderStatus(@PathVariable String orderId,
-                                    @RequestParam("status") OrderStatus status,
-                                    HttpSession session,
-                                    RedirectAttributes redirectAttributes) {
-        if (session.getAttribute("LOGGED_IN_ADMIN") == null) {
-            return "redirect:/admin/login";
-        }
-
-        try {
-            orderService.updateOrderStatus(orderId, status);
-        } catch (IllegalStateException | IllegalArgumentException ex) {
-            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
-        }
-        return "redirect:/admin/orders";
-    }
-
     @PostMapping("/add")
     public String addDish(@ModelAttribute DishRequestDTO dishDTO, HttpSession session) {
         if (session.getAttribute("LOGGED_IN_ADMIN") == null) {
@@ -158,4 +126,38 @@ public class AdminDishController {
         commandManager.redoLastAction();
         return "redirect:/admin/dishes";
     }
+
+    @GetMapping("/orders")
+    public String showOrderList(Model model, HttpSession session) {
+        if (session.getAttribute("LOGGED_IN_ADMIN") == null) {
+            return "redirect:/admin/login";
+        }
+
+        List<OrderResponseDTO> orderDTOs = orderService.getAllOrders().stream()
+                .map(OrderResponseDTO::fromDomain)
+                .collect(Collectors.toList());
+
+        model.addAttribute("orders", orderDTOs);
+        model.addAttribute("selectableByStatus", orderService.getOrderStatusSelectOptions());
+        return "admin/orders";
+    }
+
+    @PostMapping("/orders/{orderId}/status")
+    public String updateOrderStatus(@PathVariable String orderId,
+                                    @RequestParam("status") OrderStatus status,
+                                    HttpSession session,
+                                    RedirectAttributes redirectAttributes) {
+        if (session.getAttribute("LOGGED_IN_ADMIN") == null) {
+            return "redirect:/admin/login";
+        }
+
+        try {
+            orderService.updateOrderStatus(orderId, status);
+        } catch (IllegalStateException | IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/admin/orders";
+    }
+
+    
 }

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.foodorder.command.AddDishCommand;
 import com.foodorder.command.CommandManager;
-import com.foodorder.command.RemoveDishCommand;
+import com.foodorder.command.DeleteDishCommand;
 import com.foodorder.command.UpdateDishCommand;
 import com.foodorder.entity.Dish;
 import com.foodorder.repository.DishRepository;
@@ -37,7 +37,7 @@ public class DishServiceImpl implements DishService {
     @Override
     public void deleteDish(String id) {
         Dish dishInDB = dishRepository.findById(id).orElseThrow(() -> new RuntimeException("Dish not found"));
-        commandManager.executeCommand(new RemoveDishCommand(dishRepository, dishInDB));
+        commandManager.executeCommand(new DeleteDishCommand(dishRepository, dishInDB));
     }
 
 }
