@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import java.util.Stack;
 
 @Component
-public class Manager {
+public class CommandManager {
     private final Stack<ICommand> undoStack = new Stack<>();
     private final Stack<ICommand> redoStack = new Stack<>();
 
