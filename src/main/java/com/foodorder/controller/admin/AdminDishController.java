@@ -1,6 +1,6 @@
 package com.foodorder.controller.admin;
 
-import com.foodorder.command.Manager;
+import com.foodorder.command.CommandManager;
 import com.foodorder.dto.DishRequestDTO;
 import com.foodorder.dto.DishResponseDTO;
 import com.foodorder.dto.OrderResponseDTO;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 public class AdminDishController {
 
     private final DishService dishService;
-    private final Manager commandManager;
+    private final CommandManager commandManager;
     private final OrderService orderService;
 
     @GetMapping("/dashboard")
