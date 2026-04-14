@@ -10,13 +10,9 @@
 
 body {
     background-color: #f9fafb;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif !important;
     color: #1f2937;
 }
-
-/* ============================================
-   SIDEBAR STYLING
-   ============================================ */
 
 .sidebar {
     width: 260px;
@@ -29,6 +25,8 @@ body {
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
     overflow-y: auto;
     z-index: 100;
+    display: flex;
+    flex-direction: column;
 }
 
 .sidebar-brand {
@@ -46,11 +44,17 @@ body {
 
 .nav {
     list-style: none;
+    flex: 1;
 }
 
 .nav-item {
     list-style: none;
     margin: 0;
+}
+
+/* Push admin info to bottom */
+li:has(.sidebar-admin-info) {
+    margin-top: auto;
 }
 
 .nav-item .nav-link {
@@ -88,6 +92,10 @@ body {
     background-color: #f3f4f6;
     border-radius: 8px;
     border-left: 4px solid #000000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
 }
 
 .admin-name {
@@ -95,20 +103,28 @@ body {
     font-size: 14px;
     color: #1f2937;
     font-weight: 600;
-    margin-bottom: 8px;
+    margin-bottom: 0;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .btn-logout {
-    display: inline-block;
-    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
     color: #ef4444;
     text-decoration: none;
     border: 1px solid #fecaca;
-    padding: 6px 10px;
-    border-radius: 4px;
+    border-radius: 6px;
     transition: all 0.3s;
     background-color: transparent;
     cursor: pointer;
+    flex-shrink: 0;
+    font-size: 16px;
 }
 
 .btn-logout:hover {
@@ -480,6 +496,37 @@ textarea.form-control {
 
 .text-center {
     text-align: center;
+}
+
+
+
+/* Custom cho ảnh món ăn to và đẹp hơn */
+.dish-thumbnail {
+    width: 80px;
+    /* Phóng to ảnh lên 80px (nếu thích to nữa em đổi thành 100px) */
+    height: 80px;
+    /* Chiều cao bằng chiều rộng để ảnh thành hình vuông */
+    object-fit: cover;
+    /* Cực kỳ quan trọng: Cắt ảnh vừa khung mà KHÔNG BỊ MÉO */
+    border-radius: 10px;
+    /* Bo góc mềm mại hơn */
+    border: 1px solid #e5e7eb;
+    /* Viền mỏng nhẹ */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    /* Thêm hiệu ứng đổ bóng cho ảnh nổi lên */
+    transition: transform 0.2s;
+    /* Hiệu ứng mượt khi hover chuột */
+}
+
+/* Thêm tí hiệu ứng: Khi trỏ chuột vào ảnh sẽ phóng to lên một chút */
+.dish-thumbnail:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Đảm bảo nội dung các cột trong bảng được căn giữa theo chiều dọc */
+.table>tbody>tr>td {
+    vertical-align: middle;
 }
 
 /* ============================================

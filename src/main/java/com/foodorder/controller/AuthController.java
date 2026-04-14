@@ -17,6 +17,11 @@ public class AuthController {
 
     private final UserService userService;
 
+    @GetMapping("/login")
+    public String showLoginPage() {
+        return "login";
+    }
+
     @PostMapping("/login")
     public String processLogin(@RequestParam("email") String email,
                                @RequestParam("password") String password,
@@ -38,5 +43,67 @@ public class AuthController {
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/login";
+    }
+
+    @GetMapping("/register")
+    public String showRegisterPage() {
+        return "register";
+    }
+
+    @PostMapping("/register")
+    public String processRegister(@RequestParam("firstName") String firstName,
+                                  @RequestParam("lastName") String lastName,
+                                  @RequestParam("email") String email,
+                                  @RequestParam("phone") String phone,
+                                  @RequestParam("password") String password,
+                                  @RequestParam("confirmPassword") String confirmPassword,
+                                  Model model) {
+        try {
+            // Validate passwords match
+            if (!password.equals(confirmPassword)) {
+                model.addAttribute("registerError", "Mật khẩu không khớp. Vui lòng kiểm tra lại.");
+                model.addAttribute("firstName", firstName);
+                model.addAttribute("lastName", lastName);
+                model.addAttribute("email", email);
+                model.addAttribute("phone", phone);
+                return "register";
+            }
+
+            // Validate password length
+            if (password.length() < 6) {
+                model.addAttribute("registerError", "Mật khẩu phải có ít nhất 6 ký tự.");
+                model.addAttribute("firstName", firstName);
+                model.addAttribute("lastName", lastName);
+                model.addAttribute("email", email);
+                model.addAttribute("phone", phone);
+                return "register";
+            }
+
+            // Create new user
+            User newUser = new User();
+            newUser.setFullName(firstName + " " + lastName);
+            newUser.setEmail(email);
+            newUser.setPhone(phone);
+            newUser.setPassword(password);
+
+            // Register user
+            userService.register(newUser);
+
+            return "redirect:/login?success=true";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("registerError", e.getMessage());
+            model.addAttribute("firstName", firstName);
+            model.addAttribute("lastName", lastName);
+            model.addAttribute("email", email);
+            model.addAttribute("phone", phone);
+            return "register";
+        } catch (Exception e) {
+            model.addAttribute("registerError", "Có lỗi xảy ra. Vui lòng thử lại.");
+            model.addAttribute("firstName", firstName);
+            model.addAttribute("lastName", lastName);
+            model.addAttribute("email", email);
+            model.addAttribute("phone", phone);
+            return "register";
+        }
     }
 }

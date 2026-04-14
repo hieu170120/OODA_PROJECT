@@ -45,7 +45,10 @@
                                     </c:otherwise>
                                 </c:choose>
                             </span>
-                            <a href="${pageContext.request.contextPath}/admin/logout" class="btn-logout">Đăng xuất</a>
+                            <a href="${pageContext.request.contextPath}/admin/logout" class="btn-logout"
+                                title="Đăng xuất">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                            </a>
                         </div>
                     </li>
                 </ul>
@@ -60,7 +63,7 @@
 
                 <div class="content-wrapper">
                     <div class="page-header">
-                        <h4 class="page-title">Tổng quan hệ thống</h4>
+                        <!-- <h4 class="page-title">Tổng quan hệ thống</h4> -->
                     </div>
 
                     <div class="row" style="margin-bottom: 30px;">
