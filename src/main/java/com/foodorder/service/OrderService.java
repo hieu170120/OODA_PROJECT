@@ -10,9 +10,9 @@ import com.foodorder.model.Order;
 import com.foodorder.model.OrderItem;
 import com.foodorder.model.Payment;
 import com.foodorder.model.enums.OrderStatus;
-import com.foodorder.model.enums.PaymentMethod;
 import com.foodorder.model.enums.PaymentStatus;
 import com.foodorder.repository.OrderJpaRepository;
+import com.foodorder.state.order.OrderStateFactory;
 import com.foodorder.strategy.payment.PaymentStrategy;
 import com.foodorder.strategy.payment.PaymentStrategyResolver;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -28,11 +30,19 @@ public class OrderService {
 
     private final OrderJpaRepository orderRepository;
     private final PaymentStrategyResolver paymentStrategyResolver;
+    private final OrderStateFactory orderStateFactory;
 
     @Autowired
-    public OrderService(OrderJpaRepository orderRepository, PaymentStrategyResolver paymentStrategyResolver) {
+    public OrderService(OrderJpaRepository orderRepository,
+                        PaymentStrategyResolver paymentStrategyResolver,
+                        OrderStateFactory orderStateFactory) {
         this.orderRepository = orderRepository;
         this.paymentStrategyResolver = paymentStrategyResolver;
+        this.orderStateFactory = orderStateFactory;
+    }
+
+    public Map<OrderStatus, Set<OrderStatus>> getOrderStatusSelectOptions() {
+        return orderStateFactory.selectableGrouped();
     }
 
     /**
@@ -41,13 +51,19 @@ public class OrderService {
      * - Director điều phối quá trình build (void)
      * - Client lấy kết quả từ Builder qua getResult()
      * - Coupon được áp dụng riêng qua Order.applyCoupon()
+     *
+     * @param paymentMethodCode mã phương thức (khớp {@link PaymentStrategy#getMethodCode()}), null/rỗng → COD.
      */
     public Order createDeliveryOrder(Customer customer, List<OrderItem> items, String address, Coupon coupon,
-                                     PaymentMethod paymentMethod) {
+                                     String paymentMethodCode) {
         validateCheckoutInput(customer, items, address);
 
-        if (paymentMethod == null) {
-            paymentMethod = PaymentMethod.COD;
+        String code = PaymentStrategyResolver.normalize(paymentMethodCode);
+        if (code == null) {
+            code = "COD";
+        }
+        if (paymentStrategyResolver.resolve(code) == null) {
+            throw new IllegalArgumentException("Phương thức thanh toán không hỗ trợ: " + code);
         }
 
         Order newOrder = buildOrder(customer, items, address);
@@ -56,7 +72,7 @@ public class OrderService {
         }
 
         newOrder.setOrderId(UUID.randomUUID().toString());
-        attachPayment(newOrder, paymentMethod);
+        attachPayment(newOrder, code);
         processPayment(newOrder.getPayment());
 
         saveOrderSnapshot(newOrder);
@@ -85,6 +101,8 @@ public class OrderService {
             throw new IllegalArgumentException("Trạng thái đơn hàng không hợp lệ.");
         }
         OrderRecordEntity record = findRecordById(orderId);
+        OrderStatus current = record.getOrderStatus() != null ? record.getOrderStatus() : OrderStatus.RECEIVED;
+        orderStateFactory.forStatus(current).validateTransition(newStatus);
         record.setOrderStatus(newStatus);
         orderRepository.save(record);
         return mapToDomain(record);
@@ -116,21 +134,21 @@ public class OrderService {
         return builder.getResult();
     }
 
-    private void attachPayment(Order order, PaymentMethod paymentMethod) {
+    private void attachPayment(Order order, String paymentMethodCode) {
         Payment payment = new Payment();
         payment.setPaymentId("PAY-" + UUID.randomUUID().toString().substring(0, 8));
-        payment.setPaymentMethod(paymentMethod);
+        payment.setPaymentMethod(paymentMethodCode);
         payment.setAmount(order.calculateTotal());
         payment.setOrder(order);
-        payment.setPaymentStrategy(paymentStrategyResolver.resolve(paymentMethod));
+        payment.setPaymentStrategy(paymentStrategyResolver.resolve(paymentMethodCode));
         payment.setPaymentStatus(PaymentStatus.PENDING);
         order.setPayment(payment);
     }
 
     /**
      * Rule trạng thái demo:
-     * - COD: tạo đơn thành công => Payment PENDING (thu tiền lúc giao).
-     * - BANKING: xử lý ngay qua strategy => COMPLETED / FAILED.
+     * - Deferred (VD COD): chỉ validate → PENDING.
+     * - Khác: xử lý ngay qua strategy → COMPLETED / FAILED.
      */
     private void processPayment(Payment payment) {
         PaymentStrategy strategy = payment.getPaymentStrategy();
@@ -139,7 +157,7 @@ public class OrderService {
             return;
         }
 
-        if (payment.getPaymentMethod() == PaymentMethod.COD) {
+        if (strategy.isDeferredPayment()) {
             boolean accepted = strategy.processPayment(payment.getAmount(), payment.getPaymentId());
             payment.setPaymentStatus(accepted ? PaymentStatus.PENDING : PaymentStatus.FAILED);
             return;
@@ -213,7 +231,12 @@ public class OrderService {
 
         Payment payment = new Payment();
         payment.setPaymentId(record.getPaymentId());
-        payment.setPaymentMethod(record.getPaymentMethod());
+        String methodCode = PaymentStrategyResolver.normalize(record.getPaymentMethod());
+        if (methodCode == null) {
+            methodCode = record.getPaymentMethod();
+        }
+        payment.setPaymentMethod(methodCode);
+        payment.setPaymentStrategy(paymentStrategyResolver.resolve(methodCode));
         payment.setPaymentStatus(record.getPaymentStatus());
         payment.setPaidAt(record.getPaidAt());
         payment.setAmount(record.getTotalAmount());

@@ -3,10 +3,15 @@ package com.foodorder.strategy.payment;
 import org.springframework.stereotype.Component;
 
 /**
- * Chuyển khoản ngân hàng (demo) — Strategy cho {@link com.foodorder.model.enums.PaymentMethod#BANKING}.
+ * Chuyển khoản ngân hàng (demo) — mã {@code BANKING}.
  */
 @Component
 public class BankingPaymentStrategy implements PaymentStrategy {
+
+    @Override
+    public String getMethodCode() {
+        return "BANKING";
+    }
 
     @Override
     public boolean processPayment(double amount, String transactionId) {

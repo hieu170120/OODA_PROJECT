@@ -7,7 +7,6 @@ import com.foodorder.dto.UserDTO;
 import com.foodorder.model.Customer;
 import com.foodorder.model.Order;
 import com.foodorder.model.OrderItem;
-import com.foodorder.model.enums.PaymentMethod;
 import com.foodorder.service.CartService;
 import com.foodorder.service.OrderService;
 import jakarta.servlet.http.HttpSession;
@@ -173,7 +172,7 @@ public class CartController {
     public String processCheckout(
             @RequestParam(value = "customerName", required = false) String customerName,
             @RequestParam("address") String address,
-            @RequestParam(value = "paymentMethod", defaultValue = "COD") PaymentMethod paymentMethod,
+            @RequestParam(value = "paymentMethod", defaultValue = "COD") String paymentMethod,
             Model model,
             HttpSession session
     ) {
