@@ -1,28 +1,28 @@
 package com.foodorder.strategy.payment;
 
+import com.foodorder.model.enums.PaymentMethod;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
- * Ánh xạ mã phương thức (chuỗi) → bean {@link PaymentStrategy}.
+ * Ánh xạ mã phương thức (Enum) → bean {@link PaymentStrategy}.
  * Mọi strategy được Spring đăng ký tự động; thêm loại mới chỉ cần class implement interface.
  */
 @Component
 public class PaymentStrategyResolver {
 
-    private final Map<String, PaymentStrategy> strategiesByCode;
+    private final Map<PaymentMethod, PaymentStrategy> strategiesByCode;
 
     public PaymentStrategyResolver(List<PaymentStrategy> strategies) {
-        Map<String, PaymentStrategy> map = new HashMap<>();
+        Map<PaymentMethod, PaymentStrategy> map = new HashMap<>();
         for (PaymentStrategy strategy : strategies) {
-            String code = normalize(strategy.getMethodCode());
-            if (code == null || code.isEmpty()) {
+            PaymentMethod code = strategy.getMethodCode();
+            if (code == null) {
                 throw new IllegalStateException("PaymentStrategy " + strategy.getClass().getName()
-                        + " phải trả về getMethodCode() khác rỗng.");
+                        + " phải trả về getMethodCode() khác null.");
             }
             if (map.put(code, strategy) != null) {
                 throw new IllegalStateException("Trùng mã thanh toán: " + code);
@@ -32,17 +32,12 @@ public class PaymentStrategyResolver {
     }
 
     /**
-     * @param methodCode mã từ client (không phân biệt hoa thường); null hoặc rỗng được coi là không hợp lệ — gọi từ service sau khi gán mặc định.
+     * @param method mã phương thức; null được coi là không hợp lệ
      */
-    public PaymentStrategy resolve(String methodCode) {
-        return strategiesByCode.get(normalize(methodCode));
-    }
-
-    public static String normalize(String raw) {
-        if (raw == null) {
+    public PaymentStrategy resolve(PaymentMethod method) {
+        if (method == null) {
             return null;
         }
-        String t = raw.trim();
-        return t.isEmpty() ? null : t.toUpperCase(Locale.ROOT);
+        return strategiesByCode.get(method);
     }
 }

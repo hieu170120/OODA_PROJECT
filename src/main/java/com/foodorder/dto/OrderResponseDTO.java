@@ -3,6 +3,7 @@ package com.foodorder.dto;
 import com.foodorder.model.Order;
 import com.foodorder.model.Payment;
 import com.foodorder.model.enums.OrderStatus;
+import com.foodorder.model.enums.PaymentMethod;
 import com.foodorder.model.enums.PaymentStatus;
 
 import java.time.LocalDateTime;
@@ -20,7 +21,7 @@ public class OrderResponseDTO {
     private LocalDateTime estimatedPickupTime;
     private OrderStatus status;
     /** Mã phương thức (COD, BANKING, …) khớp PaymentStrategy. */
-    private String paymentMethod;
+    private PaymentMethod paymentMethod;
     private PaymentStatus paymentStatus;
     private LocalDateTime paidAt;
     private String paymentId;
@@ -51,7 +52,7 @@ public class OrderResponseDTO {
 
         Payment payment = order.getPayment();
         if (payment != null) {
-            dto.setPaymentMethod(payment.getPaymentMethod() != null ? payment.getPaymentMethod() : null);
+            dto.setPaymentMethod(payment.getPaymentMethod());
             dto.setPaymentStatus(payment.getPaymentStatus());
             dto.setPaidAt(payment.getPaidAt());
             dto.setPaymentId(payment.getPaymentId());
@@ -132,11 +133,11 @@ public class OrderResponseDTO {
         this.status = status;
     }
 
-    public String getPaymentMethod() {
+    public PaymentMethod getPaymentMethod() {
         return paymentMethod;
     }
 
-    public void setPaymentMethod(String paymentMethod) {
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
         this.paymentMethod = paymentMethod;
     }
 

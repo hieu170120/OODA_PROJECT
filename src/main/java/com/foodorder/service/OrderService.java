@@ -10,6 +10,7 @@ import com.foodorder.model.Order;
 import com.foodorder.model.OrderItem;
 import com.foodorder.model.Payment;
 import com.foodorder.model.enums.OrderStatus;
+import com.foodorder.model.enums.PaymentMethod;
 import com.foodorder.model.enums.PaymentStatus;
 import com.foodorder.repository.OrderJpaRepository;
 import com.foodorder.state.order.OrderStateFactory;
@@ -58,12 +59,17 @@ public class OrderService {
                                      String paymentMethodCode) {
         validateCheckoutInput(customer, items, address);
 
-        String code = PaymentStrategyResolver.normalize(paymentMethodCode);
-        if (code == null) {
-            code = "COD";
+        PaymentMethod method = PaymentMethod.COD;
+        if (paymentMethodCode != null && !paymentMethodCode.trim().isEmpty()) {
+            try {
+                method = PaymentMethod.valueOf(paymentMethodCode.trim().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Phương thức thanh toán không hỗ trợ: " + paymentMethodCode);
+            }
         }
-        if (paymentStrategyResolver.resolve(code) == null) {
-            throw new IllegalArgumentException("Phương thức thanh toán không hỗ trợ: " + code);
+
+        if (paymentStrategyResolver.resolve(method) == null) {
+            throw new IllegalArgumentException("Phương thức thanh toán chưa được implement: " + method);
         }
 
         Order newOrder = buildOrder(customer, items, address);
@@ -72,7 +78,7 @@ public class OrderService {
         }
 
         newOrder.setOrderId(UUID.randomUUID().toString());
-        attachPayment(newOrder, code);
+        attachPayment(newOrder, method);
         processPayment(newOrder.getPayment());
 
         saveOrderSnapshot(newOrder);
@@ -134,13 +140,13 @@ public class OrderService {
         return builder.getResult();
     }
 
-    private void attachPayment(Order order, String paymentMethodCode) {
+    private void attachPayment(Order order, PaymentMethod paymentMethod) {
         Payment payment = new Payment();
         payment.setPaymentId("PAY-" + UUID.randomUUID().toString().substring(0, 8));
-        payment.setPaymentMethod(paymentMethodCode);
+        payment.setPaymentMethod(paymentMethod);
         payment.setAmount(order.calculateTotal());
         payment.setOrder(order);
-        payment.setPaymentStrategy(paymentStrategyResolver.resolve(paymentMethodCode));
+        payment.setPaymentStrategy(paymentStrategyResolver.resolve(paymentMethod));
         payment.setPaymentStatus(PaymentStatus.PENDING);
         order.setPayment(payment);
     }
@@ -231,12 +237,12 @@ public class OrderService {
 
         Payment payment = new Payment();
         payment.setPaymentId(record.getPaymentId());
-        String methodCode = PaymentStrategyResolver.normalize(record.getPaymentMethod());
-        if (methodCode == null) {
-            methodCode = record.getPaymentMethod();
+        PaymentMethod method = record.getPaymentMethod();
+        if (method == null) {
+            method = PaymentMethod.COD;
         }
-        payment.setPaymentMethod(methodCode);
-        payment.setPaymentStrategy(paymentStrategyResolver.resolve(methodCode));
+        payment.setPaymentMethod(method);
+        payment.setPaymentStrategy(paymentStrategyResolver.resolve(method));
         payment.setPaymentStatus(record.getPaymentStatus());
         payment.setPaidAt(record.getPaidAt());
         payment.setAmount(record.getTotalAmount());
