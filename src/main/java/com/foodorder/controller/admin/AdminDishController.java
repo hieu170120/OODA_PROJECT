@@ -1,6 +1,6 @@
 package com.foodorder.controller.admin;
 
-import com.foodorder.command.Manager;
+import com.foodorder.command.CommandManager;
 import com.foodorder.dto.DishRequestDTO;
 import com.foodorder.dto.DishResponseDTO;
 import com.foodorder.dto.OrderResponseDTO;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 public class AdminDishController {
 
     private final DishService dishService;
-    private final Manager commandManager;
+    private final CommandManager commandManager;
     private final OrderService orderService;
 
     @GetMapping("/dashboard")
@@ -73,38 +73,6 @@ public class AdminDishController {
         model.addAttribute("canUndo", commandManager.canUndo());
         model.addAttribute("canRedo", commandManager.canRedo());
         return "admin/dish-list";
-    }
-
-    @GetMapping("/orders")
-    public String showOrderList(Model model, HttpSession session) {
-        if (session.getAttribute("LOGGED_IN_ADMIN") == null) {
-            return "redirect:/admin/login";
-        }
-
-        List<OrderResponseDTO> orderDTOs = orderService.getAllOrders().stream()
-                .map(OrderResponseDTO::fromDomain)
-                .collect(Collectors.toList());
-
-        model.addAttribute("orders", orderDTOs);
-        model.addAttribute("selectableByStatus", orderService.getOrderStatusSelectOptions());
-        return "admin/orders";
-    }
-
-    @PostMapping("/orders/{orderId}/status")
-    public String updateOrderStatus(@PathVariable String orderId,
-                                    @RequestParam("status") OrderStatus status,
-                                    HttpSession session,
-                                    RedirectAttributes redirectAttributes) {
-        if (session.getAttribute("LOGGED_IN_ADMIN") == null) {
-            return "redirect:/admin/login";
-        }
-
-        try {
-            orderService.updateOrderStatus(orderId, status);
-        } catch (IllegalStateException | IllegalArgumentException ex) {
-            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
-        }
-        return "redirect:/admin/orders";
     }
 
     @PostMapping("/add")
@@ -158,4 +126,38 @@ public class AdminDishController {
         commandManager.redoLastAction();
         return "redirect:/admin/dishes";
     }
+
+    @GetMapping("/orders")
+    public String showOrderList(Model model, HttpSession session) {
+        if (session.getAttribute("LOGGED_IN_ADMIN") == null) {
+            return "redirect:/admin/login";
+        }
+
+        List<OrderResponseDTO> orderDTOs = orderService.getAllOrders().stream()
+                .map(OrderResponseDTO::fromDomain)
+                .collect(Collectors.toList());
+
+        model.addAttribute("orders", orderDTOs);
+        model.addAttribute("selectableByStatus", orderService.getOrderStatusSelectOptions());
+        return "admin/orders";
+    }
+
+    @PostMapping("/orders/{orderId}/status")
+    public String updateOrderStatus(@PathVariable String orderId,
+                                    @RequestParam("status") OrderStatus status,
+                                    HttpSession session,
+                                    RedirectAttributes redirectAttributes) {
+        if (session.getAttribute("LOGGED_IN_ADMIN") == null) {
+            return "redirect:/admin/login";
+        }
+
+        try {
+            orderService.updateOrderStatus(orderId, status);
+        } catch (IllegalStateException | IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/admin/orders";
+    }
+
+    
 }

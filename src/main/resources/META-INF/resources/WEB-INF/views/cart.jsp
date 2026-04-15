@@ -187,6 +187,11 @@
                         <span class="text-muted">Phí giao hàng dự kiến</span>
                         <span class="fw-bold text-success">+ 15,000đ</span>
                     </div>
+                    <div class="d-flex justify-content-between mb-1" id="couponDiscountRow" style="display: none;">
+                        <span class="text-muted">Giảm giá coupon</span>
+                        <span class="fw-bold text-success">- <span id="couponDiscountAmount">0</span>đ</span>
+                    </div>
+                    <div id="couponAppliedLabel" class="small text-muted mb-3"></div>
                     <div class="d-flex justify-content-between mb-4">
                         <span class="fs-5 fw-bold text-dark">Tổng Cần Thanh Toán</span>
                         <span class="fs-4 fw-bold text-danger"><span id="cartGrandTotal"><fmt:formatNumber value="${cartTotal + 15000}" type="number" pattern="###,###"/></span>đ</span>
@@ -203,6 +208,16 @@
                             <textarea class="form-control" id="custAddress" name="address" style="height: 80px" required placeholder="Địa chỉ"></textarea>
                             <label for="custAddress">Địa chỉ giao hàng chi tiết</label>
                         </div>
+
+                        <h6 class="fw-bold mb-2 text-secondary">Mã giảm giá</h6>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text"><i class="bi bi-ticket-perforated"></i></span>
+                            <input type="text" class="form-control" id="couponCodeInput" name="couponCode" placeholder="Nhập coupon (ví dụ: SAVE10)" value="${enteredCouponCode}">
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#couponModal">
+                                Chọn coupon phù hợp
+                            </button>
+                        </div>
+                        <div class="small text-muted mb-4">Bạn có thể nhập mã trực tiếp hoặc bấm nút để hệ thống gợi ý mã hợp lệ theo giỏ hiện tại.</div>
 
                         <h6 class="fw-bold mb-3 text-secondary">Phương thức thanh toán</h6>
                         <div class="row g-2 mb-4">
@@ -235,10 +250,130 @@
     </div>
 </div>
 
+<div class="modal fade" id="couponModal" tabindex="-1" aria-labelledby="couponModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold" id="couponModalLabel"><i class="bi bi-ticket-perforated text-primary"></i> Chọn Coupon Phù Hợp</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <c:if test="${empty couponOptions}">
+                    <div class="alert alert-secondary mb-0">Hiện tại chưa có coupon khả dụng.</div>
+                </c:if>
+
+                <c:forEach items="${couponOptions}" var="opt">
+                    <div class="border rounded-3 p-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <div class="fw-bold fs-6">${opt.code}</div>
+                                <div class="text-muted small">${opt.description}</div>
+                            </div>
+                            <c:choose>
+                                <c:when test="${opt.eligible}">
+                                    <span class="badge bg-success">Phù hợp</span>
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="badge bg-secondary">Chưa đủ điều kiện</span>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
+
+                        <div class="small mb-2 ${opt.eligible ? 'text-success' : 'text-muted'}">${opt.reason}</div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="fw-semibold text-danger">
+                                Ước tính giảm: <fmt:formatNumber value="${opt.estimatedDiscount}" type="number" pattern="###,###"/>đ
+                            </div>
+                            <button type="button"
+                                    class="btn btn-sm ${opt.eligible ? 'btn-primary' : 'btn-outline-secondary'}"
+                                    onclick="applyCouponFromModal('${opt.code}', ${opt.eligible}, ${opt.estimatedDiscount})"
+                                    ${opt.eligible ? '' : 'disabled'}>
+                                ${opt.eligible ? 'Dùng mã này' : 'Không thể áp dụng'}
+                            </button>
+                        </div>
+                    </div>
+                </c:forEach>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    const SHIPPING_FEE = 15000;
+    let currentCartTotal = ${cartTotal};
+    const couponOptionsMap = {};
+    <c:forEach items="${couponOptions}" var="opt">
+    couponOptionsMap['${opt.code}'] = { eligible: ${opt.eligible}, discount: ${opt.estimatedDiscount} };
+    </c:forEach>
+
     function formatVND(num) {
         return Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    function normalizeCouponCode(code) {
+        return (code || '').trim().toUpperCase();
+    }
+
+    function getAppliedCouponData() {
+        const couponInput = document.getElementById('couponCodeInput');
+        const normalizedCode = normalizeCouponCode(couponInput ? couponInput.value : '');
+
+        if (!normalizedCode) {
+            return { code: '', discount: 0, eligible: false, knownCode: false };
+        }
+
+        const option = couponOptionsMap[normalizedCode];
+        if (!option) {
+            return { code: normalizedCode, discount: 0, eligible: false, knownCode: false };
+        }
+
+        if (!option.eligible || option.discount <= 0) {
+            return { code: normalizedCode, discount: 0, eligible: false, knownCode: true };
+        }
+
+        return { code: normalizedCode, discount: option.discount, eligible: true, knownCode: true };
+    }
+
+    function refreshPaymentSummary(cartTotal) {
+        const couponRow = document.getElementById('couponDiscountRow');
+        const couponAmountEl = document.getElementById('couponDiscountAmount');
+        const couponLabelEl = document.getElementById('couponAppliedLabel');
+        const cartTotalEl = document.getElementById('cartTotalAmount');
+        const grandTotalEl = document.getElementById('cartGrandTotal');
+
+        const applied = getAppliedCouponData();
+        const discount = Math.min(applied.discount, cartTotal);
+        const grandTotal = Math.max(cartTotal + SHIPPING_FEE - discount, 0);
+
+        cartTotalEl.textContent = formatVND(cartTotal);
+        grandTotalEl.textContent = formatVND(grandTotal);
+
+        if (discount > 0) {
+            couponRow.style.display = 'flex';
+            couponAmountEl.textContent = formatVND(discount);
+            couponLabelEl.textContent = 'Đang áp dụng mã: ' + applied.code;
+            couponLabelEl.className = 'small text-success mb-3';
+            return;
+        }
+
+        couponRow.style.display = 'none';
+        couponAmountEl.textContent = '0';
+
+        if (applied.code && applied.knownCode) {
+            couponLabelEl.textContent = 'Mã ' + applied.code + ' chưa đủ điều kiện với giỏ hiện tại.';
+            couponLabelEl.className = 'small text-muted mb-3';
+            return;
+        }
+
+        if (applied.code && !applied.knownCode) {
+            couponLabelEl.textContent = 'Mã ' + applied.code + ' không tồn tại trong danh sách hiện tại.';
+            couponLabelEl.className = 'small text-muted mb-3';
+            return;
+        }
+
+        couponLabelEl.textContent = '';
     }
 
     function updateQuantity(orderItemId, action) {
@@ -273,8 +408,8 @@
             }
 
             // Cập nhật tổng tiền và badge
-            document.getElementById('cartTotalAmount').textContent = formatVND(data.cartTotal);
-            document.getElementById('cartGrandTotal').textContent = formatVND(data.cartTotal + 15000);
+            currentCartTotal = data.cartTotal;
+            refreshPaymentSummary(currentCartTotal);
             document.getElementById('cartCountBadge').textContent = data.cartCount + ' món';
 
             // Nếu giỏ trống -> reload trang để hiện UI "giỏ hàng trống"
@@ -287,6 +422,38 @@
             alert('Lỗi kết nối!');
         });
     }
+
+    function applyCouponFromModal(code, eligible, estimatedDiscount) {
+        if (!eligible) {
+            return;
+        }
+
+        const couponInput = document.getElementById('couponCodeInput');
+        if (couponInput) {
+            couponInput.value = code;
+        }
+
+        if (!couponOptionsMap[code]) {
+            couponOptionsMap[code] = { eligible: true, discount: estimatedDiscount || 0 };
+        }
+
+        refreshPaymentSummary(currentCartTotal);
+
+        const modalElement = document.getElementById('couponModal');
+        const modalInstance = bootstrap.Modal.getInstance(modalElement);
+        if (modalInstance) {
+            modalInstance.hide();
+        }
+    }
+
+    const couponCodeInput = document.getElementById('couponCodeInput');
+    if (couponCodeInput) {
+        couponCodeInput.addEventListener('input', function () {
+            refreshPaymentSummary(currentCartTotal);
+        });
+    }
+
+    refreshPaymentSummary(currentCartTotal);
 </script>
 </body>
 </html>
