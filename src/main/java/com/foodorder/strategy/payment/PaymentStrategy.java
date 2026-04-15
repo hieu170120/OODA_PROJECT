@@ -1,12 +1,14 @@
 package com.foodorder.strategy.payment;
 
+import com.foodorder.model.enums.PaymentMethod;
+
 public interface PaymentStrategy {
 
     /**
      * Mã phương thức thanh toán (VD: COD, BANKING, WALLET). Mỗi bean strategy một mã duy nhất.
      * Resolver chuẩn hóa uppercase — không cần enum tập trung.
      */
-    String getMethodCode();
+    PaymentMethod getMethodCode();
 
     boolean processPayment(double amount, String transactionId);
 

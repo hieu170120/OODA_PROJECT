@@ -1,5 +1,6 @@
 package com.foodorder.strategy.payment;
 
+import com.foodorder.model.enums.PaymentMethod;
 import org.springframework.stereotype.Component;
 
 /**
@@ -9,8 +10,8 @@ import org.springframework.stereotype.Component;
 public class CodPaymentStrategy implements PaymentStrategy {
 
     @Override
-    public String getMethodCode() {
-        return "COD";
+    public PaymentMethod getMethodCode() {
+        return PaymentMethod.COD;
     }
 
     @Override

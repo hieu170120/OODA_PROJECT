@@ -1,6 +1,7 @@
 package com.foodorder.entity;
 
 import com.foodorder.model.enums.OrderStatus;
+import com.foodorder.model.enums.PaymentMethod;
 import com.foodorder.model.enums.PaymentStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,8 +42,9 @@ public class OrderRecordEntity {
     @Column(name = "payment_id", length = 64)
     private String paymentId;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "payment_method", length = 32)
-    private String paymentMethod;
+    private PaymentMethod paymentMethod;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_status", length = 32)
@@ -121,11 +123,11 @@ public class OrderRecordEntity {
         this.paymentId = paymentId;
     }
 
-    public String getPaymentMethod() {
+    public PaymentMethod getPaymentMethod() {
         return paymentMethod;
     }
 
-    public void setPaymentMethod(String paymentMethod) {
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
         this.paymentMethod = paymentMethod;
     }
 
