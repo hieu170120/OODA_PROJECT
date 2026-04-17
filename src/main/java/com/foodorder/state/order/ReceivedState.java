@@ -6,9 +6,15 @@ import org.springframework.stereotype.Component;
 import java.util.Set;
 
 @Component
-public class ReceivedState extends AbstractOrderState {
+public class ReceivedState implements OrderState {
 
-    public ReceivedState() {
-        super(OrderStatus.RECEIVED, Set.of(OrderStatus.PREPARING, OrderStatus.CANCELLED));
+    @Override
+    public OrderStatus getStatus() {
+        return OrderStatus.RECEIVED;
+    }
+
+    @Override
+    public Set<OrderStatus> getForwardTargets() {
+        return Set.of(OrderStatus.PREPARING, OrderStatus.CANCELLED);
     }
 }
