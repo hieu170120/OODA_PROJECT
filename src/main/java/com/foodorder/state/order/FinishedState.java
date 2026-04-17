@@ -6,9 +6,15 @@ import org.springframework.stereotype.Component;
 import java.util.Set;
 
 @Component
-public class FinishedState extends AbstractOrderState {
+public class FinishedState implements OrderState {
 
-    public FinishedState() {
-        super(OrderStatus.FINISHED, Set.of());
+    @Override
+    public OrderStatus getStatus() {
+        return OrderStatus.FINISHED;
+    }
+
+    @Override
+    public Set<OrderStatus> getForwardTargets() {
+        return Set.of();
     }
 }
