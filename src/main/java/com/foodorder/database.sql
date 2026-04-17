@@ -24,15 +24,18 @@ INSERT IGNORE INTO managers (manager_id) VALUES
 ('usr-002');
 
 -- ==========================================
--- BẢNG: dishes (Món ăn)
+-- BẢNG: dishes (Món ăn - Fast Food)
 -- Các cột: dish_id, name, price, image_url, description
 -- ==========================================
 INSERT IGNORE INTO dishes (dish_id, name, price, image_url, description) VALUES 
-('dish-001', 'Phở Bò Đặc Biệt', 65000.0, 'https://cdn.tgdd.vn/Files/2022/01/25/1412805/cach-nau-pho-b…nh-chuan-vi-thom-ngon-nhu-ngoai-hang-202201250230038502.jpg', 'Phở bò truyền thống với bò viên, nạm và gầu'),
-('dish-002', 'Bún Chả Hà Nội', 55000.0, 'https://cdn.tgdd.vn/Files/2021/08/17/1375685/tu-lam-bun-cha…on-gian-dam-da-huong-vi-truyen-thong-202201041049339794.jpg', 'Thịt lợn nướng chả xiên ăn kèm bún và nước mắm chua ngọt'),
-('dish-003', 'Cơm Tấm Sườn Bì Chả', 50000.0, 'https://cdn.tgdd.vn/Files/2019/07/26/1182061/cach-lam-com-tam-suon-bi-cha-chuan-vi-sai-gon-202201051515152865.jpg', 'Cơm tấm kèm sườn nướng mỡ hành thơm nức mũi'),
-('dish-004', 'Pizza Chả Cá', 150000.0, 'https://cdn.tgdd.vn/Files/2020/09/24/1293375/cach-lam-pizza…-beo-ngay-thom-ngon-don-gian-tai-nha-202201121021160352.jpg', 'Pizza nướng củi nhân hải sản và phô mai kéo sợi'),
-('dish-005', 'Trà Sữa Trân Châu', 35000.0, 'https://cdn.tgdd.vn/Files/2021/08/12/1374526/cach-lam-tra-s…ran-chau-duong-den-sieu-ngon-tai-nha-202108121111559868.jpg', 'Trà sữa truyền thống, ngậy vị sữa và dẻo dai trân châu');
+('dish-001', 'Hamburger Bò Phô Mai', 55000.0, 'https://cdn.tgdd.vn/Files/2022/01/25/1412805/cach-lam-hamburger-bo-pho-mai-tai-nha-ngon-nhu-ngoai-hang-202201251030038502.jpg', 'Hamburger bò Úc kẹp phô mai cheddar, rau xà lách tươi và sốt đặc biệt'),
+('dish-002', 'Kebab Thịt Gà', 45000.0, 'https://cdn.tgdd.vn/2021/11/CookDish/cach-lam-banh-mi-kebab-don-gian-ngon-kho-cuong-avt-1200x676.jpg', 'Kebab cuộn thịt gà nướng, rau sống, hành tây và sốt tỏi'),
+('dish-003', 'Gà Rán Giòn (3 miếng)', 65000.0, 'https://cdn.tgdd.vn/Files/2020/03/30/1245765/cach-lam-ga-ran-kfc-gion-rum-thom-ngon-nhu-ngoai-hang-202003300834474754.jpg', 'Gà rán giòn tẩm ướp gia vị bí truyền, giòn rụm bên ngoài, mềm mọng bên trong'),
+('dish-004', 'Pizza Hải Sản', 120000.0, 'https://cdn.tgdd.vn/Files/2020/09/24/1293375/cach-lam-pizza-hai-san-beo-ngay-thom-ngon-don-gian-tai-nha-202201121021160352.jpg', 'Pizza đế giòn với tôm, mực, phô mai mozzarella kéo sợi'),
+('dish-005', 'Hot Dog Xúc Xích', 35000.0, 'https://cdn.tgdd.vn/2021/09/CookProduct/1200-1200x676-15.jpg', 'Hot dog xúc xích Đức nướng, kẹp bánh mì mềm với sốt mù tạt và ketchup'),
+('dish-006', 'Khoai Tây Chiên (L)', 30000.0, 'https://cdn.tgdd.vn/Files/2021/07/22/1369637/cach-lam-khoai-tay-chien-gion-ngon-bang-noi-chien-khong-dau-202201070844298498.jpg', 'Khoai tây chiên giòn vàng ươm, rắc muối biển tự nhiên'),
+('dish-007', 'Trà Sữa Trân Châu', 35000.0, 'https://cdn.tgdd.vn/Files/2021/08/12/1374526/cach-lam-tra-sua-tran-chau-duong-den-sieu-ngon-tai-nha-202108121111559868.jpg', 'Trà sữa truyền thống, ngậy vị sữa và dẻo dai trân châu đường đen'),
+('dish-008', 'Coca Cola (L)', 20000.0, 'https://cdn.tgdd.vn/Products/Images/2443/84856/bhx/coca-cola-lon-330ml-202110291559103498.jpg', 'Coca Cola lon mát lạnh sảng khoái');
 
 -- ==========================================
 -- BẢNG: order_records (Lịch sử đơn hàng)

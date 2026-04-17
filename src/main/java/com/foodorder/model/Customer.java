@@ -34,7 +34,7 @@ public class Customer extends User {
         }
         for (Order order : orders) {
             if (order != null && orderId != null && orderId.equals(order.getOrderId())) {
-                return order.getStatus(); // Đã sửa lỗi: getOrderStatus() -> getStatus()
+                return order.getStatus();
             }
         }
         return null;

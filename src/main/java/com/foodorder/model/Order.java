@@ -12,6 +12,7 @@ public class Order {
     private LocalDateTime orderTime;
     private double subTotal;
     private double shippingFee;
+    private double totalAmount; 
     private String shippingAddress;
     private LocalDateTime estimatedPickupTime;
     private OrderStatus status;
@@ -53,6 +54,10 @@ public class Order {
     }
 
     public double calculateTotal() {
+      
+        if (totalAmount > 0) {
+            return totalAmount;
+        }
         double total = calculateSubtotalAmount() + shippingFee;
 
         if (coupon != null) {
@@ -112,6 +117,14 @@ public class Order {
 
     public void setShippingFee(double shippingFee) {
         this.shippingFee = shippingFee;
+    }
+
+    public double getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(double totalAmount) {
+        this.totalAmount = totalAmount;
     }
 
     public String getShippingAddress() {

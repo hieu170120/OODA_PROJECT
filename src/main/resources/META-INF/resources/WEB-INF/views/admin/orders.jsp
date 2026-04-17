@@ -76,11 +76,12 @@
                     <thead>
                         <tr>
                             <th width="12%">Ma Don</th>
-                            <th width="18%">Khach Hang</th>
-                            <th width="25%">Dia Chi</th>
+                            <th width="15%">Khach Hang</th>
+                            <th width="18%">Dia Chi</th>
+                            <th width="14%">Thoi gian</th>
                             <th width="12%">Tong Tien</th>
-                            <th width="12%">Thanh Toan</th>
-                            <th width="15%">Trang Thai</th>
+                            <th width="10%">Thanh Toan</th>
+                            <th width="13%">Trang Thai</th>
                             <th width="6%" class="text-center">Luu</th>
                         </tr>
                     </thead>
@@ -97,9 +98,17 @@
                                     ${order.shippingAddress}
                                 </td>
                                 <td>
+                                    <c:if test="${not empty order.orderTime}">
+                                        <small><fmt:parseDate value="${order.orderTime}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedTime" type="both" /><fmt:formatDate value="${parsedTime}" pattern="dd/MM/yyyy HH:mm" /></small>
+                                    </c:if>
+                                    <c:if test="${empty order.orderTime}">
+                                        <small class="text-muted">N/A</small>
+                                    </c:if>
+                                </td>
+                                <td>
                                     <strong>
                                         <fmt:formatNumber value="${order.totalAmount}" type="number"
-                                            groupingUsed="true" maxFractionDigits="0" /> d
+                                            groupingUsed="true" maxFractionDigits="0" />d
                                     </strong>
                                 </td>
                                 <td>

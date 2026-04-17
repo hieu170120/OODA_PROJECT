@@ -9,10 +9,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface IOrderBuilder {
-    void reset();
-    void buildCustomer(Customer customer);
-    void buildItems(List<OrderItem> items);
-    void buildDeliveryInfo(String address, LocalDateTime pickupTime);
-    void buildPayment(Payment payment);
-    Order getResult();
+    void reset();                                  
+    void buildCustomer(Customer customer);          
+    void buildItems(List<OrderItem> items);         
+    void buildDeliveryInfo(String address,LocalDateTime pickupTime);
+    void buildPayment(Payment payment);             
+    Order getResult();                             
 }
+

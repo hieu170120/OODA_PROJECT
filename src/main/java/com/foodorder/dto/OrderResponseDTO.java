@@ -38,7 +38,7 @@ public class OrderResponseDTO {
         dto.setOrderTime(order.getOrderTime());
         dto.setSubTotal(order.getSubTotal());
         dto.setShippingFee(order.getShippingFee());
-        dto.setTotalAmount(order.calculateTotal());
+        dto.setTotalAmount(order.getTotalAmount() > 0 ? order.getTotalAmount() : order.calculateTotal());
         dto.setShippingAddress(order.getShippingAddress());
         dto.setEstimatedPickupTime(order.getEstimatedPickupTime());
         dto.setStatus(order.getStatus());
