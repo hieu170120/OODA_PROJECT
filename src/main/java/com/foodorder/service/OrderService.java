@@ -56,6 +56,7 @@ public class OrderService {
      * @param paymentMethodCode mã phương thức (khớp {@link PaymentStrategy#getMethodCode()}), null/rỗng → COD.
      */
     public Order createDeliveryOrder(Customer customer, List<OrderItem> items, String address, Coupon coupon,
+                                     double couponDiscount,
                                      String paymentMethodCode) {
         validateCheckoutInput(customer, items, address);
 
@@ -74,7 +75,7 @@ public class OrderService {
 
         Order newOrder = buildOrder(customer, items, address);
         if (coupon != null) {
-            newOrder.applyCoupon(coupon);
+            newOrder.applyCoupon(coupon, couponDiscount);
         }
 
         newOrder.setOrderId(UUID.randomUUID().toString());
@@ -201,6 +202,13 @@ public class OrderService {
         entity.setOrderStatus(order.getStatus());
         entity.setOrderTime(order.getOrderTime());
         entity.setEstimatedPickupTime(order.getEstimatedPickupTime());
+
+        Coupon coupon = order.getCoupon();
+        if (coupon != null) {
+            entity.setCouponId(coupon.getCouponId());
+            entity.setCouponCode(coupon.getCouponCode());
+            entity.setCouponDiscount(order.getCouponDiscount());
+        }
 
         Payment payment = order.getPayment();
         if (payment != null) {

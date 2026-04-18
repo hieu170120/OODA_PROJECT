@@ -175,6 +175,11 @@
                     <i class="fa-solid fa-receipt"></i> Đơn hàng
                 </a>
             </li>
+            <li class="nav-item">
+                <a href="${pageContext.request.contextPath}/admin/coupons" class="nav-link">
+                    <i class="fa-solid fa-ticket"></i> Coupon
+                </a>
+            </li>
             <li style="list-style: none; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
                 <div class="sidebar-admin-info">
                     <span class="admin-name">

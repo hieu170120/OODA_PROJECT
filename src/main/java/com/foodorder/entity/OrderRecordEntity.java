@@ -35,6 +35,15 @@ public class OrderRecordEntity {
     @Column(name = "total_amount", nullable = false)
     private double totalAmount;
 
+    @Column(name = "coupon_id", length = 64)
+    private String couponId;
+
+    @Column(name = "coupon_code", length = 64)
+    private String couponCode;
+
+    @Column(name = "coupon_discount")
+    private double couponDiscount;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "order_status", nullable = false, length = 32)
     private OrderStatus orderStatus;
@@ -113,6 +122,30 @@ public class OrderRecordEntity {
 
     public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+    public String getCouponId() {
+        return couponId;
+    }
+
+    public void setCouponId(String couponId) {
+        this.couponId = couponId;
+    }
+
+    public String getCouponCode() {
+        return couponCode;
+    }
+
+    public void setCouponCode(String couponCode) {
+        this.couponCode = couponCode;
+    }
+
+    public double getCouponDiscount() {
+        return couponDiscount;
+    }
+
+    public void setCouponDiscount(double couponDiscount) {
+        this.couponDiscount = couponDiscount;
     }
 
     public String getPaymentId() {

@@ -209,8 +209,10 @@ public class CartController {
         Order previewOrder = buildPreviewOrder(cart);
 
         Coupon coupon;
+        double couponDiscount = 0;
         try {
             coupon = couponService.resolveCoupon(couponCode, previewOrder);
+            couponDiscount = couponService.calculateDiscount(coupon, previewOrder);
         } catch (IllegalArgumentException ex) {
             // Populate lại cart với lỗi coupon
             List<CartItemDTO> cartItemDTOs = cart.stream().map(CartItemDTO::fromDomain).collect(Collectors.toList());
@@ -228,7 +230,8 @@ public class CartController {
         try {
             // Delegate nghiệp vụ đặt hàng cho OrderService (Builder & Strategy Pattern)
             // OrderService sẽ normalize paymentMethod string (COD, BANKING, etc.)
-            completedOrder = orderService.createDeliveryOrder(customer, cart, address, coupon, paymentMethod);
+            completedOrder = orderService.createDeliveryOrder(customer, cart, address, coupon, couponDiscount, paymentMethod);
+            couponService.recordCouponUsage(completedOrder.getCoupon());
         } catch (IllegalArgumentException ex) {
             List<CartItemDTO> cartItemDTOs = cart.stream().map(CartItemDTO::fromDomain).collect(Collectors.toList());
             model.addAttribute("user", loggedInUser);
@@ -243,9 +246,7 @@ public class CartController {
 
         // Chuyển Domain → DTO trước khi đưa ra View (3-Tier)
         model.addAttribute("order", OrderResponseDTO.fromDomain(completedOrder));
-        double appliedDiscount = completedOrder.getCoupon() != null
-                ? completedOrder.getCoupon().calculateDiscount(completedOrder)
-                : 0;
+        double appliedDiscount = completedOrder.getCouponDiscount();
         model.addAttribute("appliedDiscount", appliedDiscount);
 
         // Đặt thành công → Xóa giỏ

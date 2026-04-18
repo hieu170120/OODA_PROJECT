@@ -42,3 +42,18 @@ INSERT IGNORE INTO order_records (order_id, customer_name, shipping_address, sub
 ('ORD-1001', 'Nguyễn Văn A', '123 Đường Điện Biên Phủ, Quận Bình Thạnh, TP.HCM', 130000.0, 15000.0, 145000.0, 'RECEIVED', NULL, 'COD', 'PENDING', NULL, NOW(), DATE_ADD(NOW(), INTERVAL 45 MINUTE)),
 ('ORD-1002', 'Trần Thị B', '456 Lê Lợi, Quận 1, TP.HCM', 150000.0, 0.0, 150000.0, 'FINISHED', 'PAY-MOMO-X1', 'BANKING', 'COMPLETED', DATE_SUB(NOW(), INTERVAL 1 HOUR), DATE_SUB(NOW(), INTERVAL 1 HOUR), DATE_ADD(NOW(), INTERVAL 30 MINUTE)),
 ('ORD-1003', 'Khách Vãng Lai', '789 Nguyễn Văn Cừ, Quận 5, TP.HCM', 105000.0, 20000.0, 125000.0, 'PREPARING', 'PAY-ZALO-Y2', 'BANKING', 'COMPLETED', DATE_SUB(NOW(), INTERVAL 5 MINUTE), DATE_SUB(NOW(), INTERVAL 5 MINUTE), DATE_ADD(NOW(), INTERVAL 40 MINUTE));
+
+-- ==========================================
+-- BẢNG: coupons (Mã giảm giá)
+-- Các cột: coupon_id, coupon_code, discount_value, min_order_value,
+--          is_percentage, max_discount, valid_from, valid_until,
+--          is_active, usage_limit, used_count
+-- ==========================================
+INSERT IGNORE INTO coupons
+(coupon_id, coupon_code, discount_value, min_order_value, is_percentage, max_discount, valid_from, valid_until, is_active, usage_limit, used_count)
+VALUES
+('cp-001', 'SAVE10', 10.0, 100000.0, true, 30000.0, NOW(), DATE_ADD(NOW(), INTERVAL 30 DAY), true, 100, 0),
+('cp-002', 'LESS25K', 25000.0, 120000.0, false, NULL, NOW(), DATE_ADD(NOW(), INTERVAL 45 DAY), true, 200, 0),
+('cp-003', 'FREESHIP15', 15000.0, 80000.0, false, NULL, NOW(), DATE_ADD(NOW(), INTERVAL 20 DAY), true, NULL, 0),
+('cp-004', 'BIGSALE20', 20.0, 200000.0, true, 50000.0, NOW(), DATE_ADD(NOW(), INTERVAL 15 DAY), true, 50, 0),
+('cp-005', 'EXPIRED5', 5.0, 50000.0, true, 10000.0, DATE_SUB(NOW(), INTERVAL 60 DAY), DATE_SUB(NOW(), INTERVAL 30 DAY), false, 100, 100);

@@ -33,6 +33,11 @@
                             <i class="fa-solid fa-receipt"></i> Đơn hàng
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="${pageContext.request.contextPath}/admin/coupons" class="nav-link">
+                            <i class="fa-solid fa-ticket"></i> Coupon
+                        </a>
+                    </li>
                     <li style="list-style: none; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
                         <div class="sidebar-admin-info">
                             <span class="admin-name">
@@ -169,6 +174,18 @@
                                         <i class="fa-solid fa-receipt"></i>
                                     </div>
                                     <div style="font-weight: 600; color: #1f2937;">Quản lý Đơn Hàng</div>
+                                </div>
+                            </a>
+
+                            <a href="${pageContext.request.contextPath}/admin/coupons"
+                                style="text-decoration: none; color: inherit;">
+                                <div style="padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px; text-align: center; transition: all 0.3s; cursor: pointer;"
+                                    onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'; this.style.borderColor='#000000';"
+                                    onmouseout="this.style.boxShadow='none'; this.style.borderColor='#e5e7eb';">
+                                    <div style="font-size: 28px; margin-bottom: 10px; color: #2563eb;">
+                                        <i class="fa-solid fa-ticket"></i>
+                                    </div>
+                                    <div style="font-weight: 600; color: #1f2937;">Quản lý Coupon</div>
                                 </div>
                             </a>
                         </div>

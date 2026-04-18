@@ -56,7 +56,7 @@ public class OrderController {
 
         String deliveryAddress = "Đại học Tôn Đức Thắng, TP.HCM";
         Order createdOrder = orderService.createDeliveryOrder(
-                customer, items, deliveryAddress, null, "COD"
+            customer, items, deliveryAddress, null, 0, "COD"
         );
 
         double calculatedTotal = createdOrder.calculateTotal();

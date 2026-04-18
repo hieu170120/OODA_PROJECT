@@ -17,6 +17,7 @@ public class Order {
     private OrderStatus status;
     private List<OrderItem> orderItems;
     private Coupon coupon;
+    private double couponDiscount;
     private Payment payment;
     private List<Notification> notifications;
 
@@ -55,11 +56,11 @@ public class Order {
     public double calculateTotal() {
         double total = calculateSubtotalAmount() + shippingFee;
 
-        if (coupon != null) {
-            total -= coupon.calculateDiscount(this);
-            if (total < 0) {
-                total = 0;
-            }
+        if (couponDiscount > 0) {
+            total -= couponDiscount;
+        }
+        if (total < 0) {
+            total = 0;
         }
         return total;
     }
@@ -68,10 +69,9 @@ public class Order {
         this.status = newStatus;
     }
     
-    public void applyCoupon(Coupon coupon) {
-        if (coupon != null && coupon.isValid(this)) {
-            this.coupon = coupon;
-        }
+    public void applyCoupon(Coupon coupon, double discountAmount) {
+        this.coupon = coupon;
+        this.couponDiscount = Math.max(discountAmount, 0);
     }
 
     public String getOrderId() {
@@ -152,6 +152,14 @@ public class Order {
 
     public void setCoupon(Coupon coupon) {
         this.coupon = coupon;
+    }
+
+    public double getCouponDiscount() {
+        return couponDiscount;
+    }
+
+    public void setCouponDiscount(double couponDiscount) {
+        this.couponDiscount = Math.max(couponDiscount, 0);
     }
 
     public Payment getPayment() {
