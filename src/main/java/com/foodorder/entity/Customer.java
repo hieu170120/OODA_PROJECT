@@ -11,7 +11,6 @@ import lombok.*;
 @EqualsAndHashCode(callSuper = true)
 @PrimaryKeyJoinColumn(name = "id")
 public class Customer extends User {
-
     @Column(name = "reward_points")
     private int rewardPoints;
 

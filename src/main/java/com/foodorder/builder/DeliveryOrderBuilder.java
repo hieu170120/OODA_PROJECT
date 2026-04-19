@@ -10,54 +10,52 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class DeliveryOrderBuilder implements IOrderBuilder {
-    private Order result;
+    private Order result;      
 
     public DeliveryOrderBuilder() {
-        this.reset();
+        this.reset();         
     }
 
     @Override
     public void reset() {
-        this.result = new Order();
-        this.result.setStatus(OrderStatus.RECEIVED);
-        this.result.setOrderTime(LocalDateTime.now());
+        this.result = new Order();                    
+        this.result.setStatus(OrderStatus.RECEIVED);   
+        this.result.setOrderTime(LocalDateTime.now()); 
     }
 
     @Override
     public void buildCustomer(Customer customer) {
-        this.result.setCustomer(customer);
+        this.result.setCustomer(customer);             
     }
 
     @Override
     public void buildItems(List<OrderItem> items) {
-        this.result.setOrderItems(items);
+        this.result.setOrderItems(items);              
         double subTotal = 0;
-        if (items != null) {
-            for (OrderItem item : items) {
-                subTotal += item.calculateSubTotal();
-            }
+        for (OrderItem item : items) {
+            subTotal += item.calculateSubTotal();     
         }
         this.result.setSubTotal(subTotal);
     }
 
     @Override
     public void buildDeliveryInfo(String address, LocalDateTime pickupTime) {
-        this.result.setShippingAddress(address);
+        this.result.setShippingAddress(address);       
         this.result.setEstimatedPickupTime(pickupTime);
-        this.result.setShippingFee(15000.0); 
+        this.result.setShippingFee(15000.0);            
     }
 
     @Override
     public void buildPayment(Payment payment) {
         if (payment != null) {
-            this.result.setPayment(payment);
+            this.result.setPayment(payment);            
         }
     }
 
     @Override
     public Order getResult() {
-        Order finalOrder = this.result;
-        this.reset(); 
-        return finalOrder;
+        Order finalOrder = this.result;                 
+        this.reset();                                   
+        return finalOrder;                              
     }
 }

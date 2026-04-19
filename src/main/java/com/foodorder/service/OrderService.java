@@ -46,15 +46,15 @@ public class OrderService {
         return orderStateFactory.selectableGrouped();
     }
 
-    /**
-     * Dùng Builder và Director để tạo Order phức tạp.
-     * Theo chuẩn Builder Pattern:
-     * - Director điều phối quá trình build (void)
-     * - Client lấy kết quả từ Builder qua getResult()
-     * - Coupon được áp dụng riêng qua Order.applyCoupon()
-     *
-     * @param paymentMethodCode mã phương thức (khớp {@link PaymentStrategy#getMethodCode()}), null/rỗng → COD.
-     */
+    // /**
+    //  * Dùng Builder và Director để tạo Order phức tạp.
+    //  * Theo chuẩn Builder Pattern:
+    //  * - Director điều phối quá trình build (void)
+    //  * - Client lấy kết quả từ Builder qua getResult()
+    //  * - Coupon được áp dụng riêng qua Order.applyCoupon()
+    //  *
+    //  * @param paymentMethodCode mã phương thức (khớp {@link PaymentStrategy#getMethodCode()}), null/rỗng → COD.
+    //  */
     public Order createDeliveryOrder(Customer customer, List<OrderItem> items, String address, Coupon coupon,
                                      String paymentMethodCode) {
         validateCheckoutInput(customer, items, address);
@@ -89,7 +89,7 @@ public class OrderService {
      * Lấy danh sách tất cả đơn hàng từ CSDL
      */
     public List<Order> getAllOrders() {
-        List<OrderRecordEntity> records = orderRepository.findAll();
+        List<OrderRecordEntity> records = orderRepository.findAllByOrderByOrderTimeDesc();
         List<Order> orders = new ArrayList<>();
         for (OrderRecordEntity record : records) {
             orders.add(mapToDomain(record));
@@ -126,7 +126,6 @@ public class OrderService {
         orderRepository.save(record);
         return mapToDomain(record);
     }
-
     private Order buildOrder(Customer customer, List<OrderItem> items, String address) {
         IOrderBuilder builder = new DeliveryOrderBuilder();
         OrderDirector director = new OrderDirector(builder);
@@ -139,7 +138,6 @@ public class OrderService {
         );
         return builder.getResult();
     }
-
     private void attachPayment(Order order, PaymentMethod paymentMethod) {
         Payment payment = new Payment();
         payment.setPaymentId("PAY-" + UUID.randomUUID().toString().substring(0, 8));
@@ -227,6 +225,8 @@ public class OrderService {
         order.setOrderTime(record.getOrderTime());
         order.setSubTotal(record.getSubTotal());
         order.setShippingFee(record.getShippingFee());
+        // Lưu totalAmount đã tính sẵn (bao gồm coupon discount) từ DB
+        order.setTotalAmount(record.getTotalAmount());
         order.setShippingAddress(record.getShippingAddress());
         order.setEstimatedPickupTime(record.getEstimatedPickupTime());
         order.setStatus(record.getOrderStatus() != null ? record.getOrderStatus() : OrderStatus.RECEIVED);

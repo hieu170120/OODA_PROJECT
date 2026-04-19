@@ -73,6 +73,51 @@
             font-size: 0.7rem;
             padding: 4px 6px;
         }
+
+        /* Topping Items */
+        .topping-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        .topping-item:hover {
+            background: #eef6ff;
+            border-color: #b8d4f0;
+            transform: scale(1.015);
+        }
+        .topping-item.selected {
+            background: #e7f1ff;
+            border-color: #0d6efd;
+            box-shadow: 0 2px 8px rgba(13,110,253,0.15);
+        }
+        .topping-icon {
+            font-size: 1.2rem;
+            margin-right: 8px;
+            line-height: 1;
+        }
+        .topping-empty {
+            text-align: center;
+            color: #adb5bd;
+            padding: 20px 15px;
+            font-style: italic;
+        }
+        .topping-price-tag {
+            background: #fff3cd;
+            color: #856404;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body>
@@ -178,36 +223,9 @@
 
                     <h6 class="fw-bold mb-3 text-secondary"><i class="bi bi-stars"></i> Thêm Topping (Tùy chọn)</h6>
 
-                    <!-- Danh sách Topping tĩnh (Có thể mở rộng sau này) -->
-                    <div class="list-group mb-4">
-                        <label class="list-group-item d-flex justify-content-between align-items-center bg-light border-0 mb-1 rounded cursor-pointer">
-                            <div>
-                                <input class="form-check-input me-2 topping-checkbox" type="checkbox" name="toppings" value="Trân châu đen_5000" data-price="5000">
-                                Trân châu đen
-                            </div>
-                            <span class="text-muted small">+5,000đ</span>
-                        </label>
-                        <label class="list-group-item d-flex justify-content-between align-items-center bg-light border-0 mb-1 rounded cursor-pointer">
-                            <div>
-                                <input class="form-check-input me-2 topping-checkbox" type="checkbox" name="toppings" value="Trứng ốp la_8000" data-price="8000">
-                                Trứng ốp la
-                            </div>
-                            <span class="text-muted small">+8,000đ</span>
-                        </label>
-                        <label class="list-group-item d-flex justify-content-between align-items-center bg-light border-0 mb-1 rounded cursor-pointer">
-                            <div>
-                                <input class="form-check-input me-2 topping-checkbox" type="checkbox" name="toppings" value="Phô mai_10000" data-price="10000">
-                                Phô mai
-                            </div>
-                            <span class="text-muted small">+10,000đ</span>
-                        </label>
-                        <label class="list-group-item d-flex justify-content-between align-items-center bg-light border-0 rounded cursor-pointer">
-                            <div>
-                                <input class="form-check-input me-2 topping-checkbox" type="checkbox" name="toppings" value="Size Lớn (L)_15000" data-price="15000">
-                                Up Size (L)
-                            </div>
-                            <span class="text-muted small">+15,000đ</span>
-                        </label>
+                    <!-- Container: JS sẽ render topping phù hợp với từng món -->
+                    <div id="toppingListContainer" class="mb-4">
+                        <div class="topping-empty">Chọn món để xem topping phù hợp</div>
                     </div>
 
                     <div class="d-flex align-items-center justify-content-between">
@@ -250,7 +268,71 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // JS Tính toán giá Modal
+    // ================================================
+    // DỮ LIỆU TOPPING TĨNH - PHÙ HỢP THEO TỪNG MÓN
+    // (Decorator Pattern: mỗi Topping bọc thêm lên BaseDish)
+    // ================================================
+    const TOPPING_DATA = {
+        'Hamburger Bò Phô Mai': [
+            { name: 'Thêm phô mai',       price: 8000,  icon: '🧀' },
+            { name: 'Thêm patty bò',      price: 15000, icon: '🥩' },
+            { name: 'Bacon',               price: 12000, icon: '🥓' },
+            { name: 'Trứng ốp la',        price: 8000,  icon: '🍳' },
+            { name: 'Xà lách thêm',       price: 3000,  icon: '🥬' },
+        ],
+        'Kebab Thịt Gà': [
+            { name: 'Thêm thịt gà',       price: 15000, icon: '🍗' },
+            { name: 'Phô mai',            price: 8000,  icon: '🧀' },
+            { name: 'Sốt tỏi thêm',      price: 5000,  icon: '🧄' },
+            { name: 'Rau sống thêm',      price: 3000,  icon: '🥗' },
+            { name: 'Ớt cay',             price: 3000,  icon: '🌶️' },
+        ],
+        'Gà Rán Giòn (3 miếng)': [
+            { name: 'Thêm 2 miếng gà',    price: 25000, icon: '🍗' },
+            { name: 'Sốt cay Hàn Quốc',   price: 5000,  icon: '🌶️' },
+            { name: 'Khoai tây nghiền',   price: 10000, icon: '🥔' },
+            { name: 'Coleslaw',            price: 8000,  icon: '🥗' },
+        ],
+        'Pizza Hải Sản': [
+            { name: 'Phô mai thêm',       price: 15000, icon: '🧀' },
+            { name: 'Xúc xích',           price: 12000, icon: '🌭' },
+            { name: 'Thêm hải sản',       price: 20000, icon: '🦐' },
+            { name: 'Viền phô mai',       price: 18000, icon: '🫓' },
+        ],
+        'Hot Dog Xúc Xích': [
+            { name: 'Phô mai',            price: 8000,  icon: '🧀' },
+            { name: 'Thêm xúc xích',      price: 12000, icon: '🌭' },
+            { name: 'Hành phi',            price: 5000,  icon: '🧅' },
+            { name: 'Jalapeño',            price: 5000,  icon: '🌶️' },
+        ],
+        'Khoai Tây Chiên (L)': [
+            { name: 'Sốt phô mai',        price: 8000,  icon: '🧀' },
+            { name: 'Sốt cà chua thêm',   price: 3000,  icon: '🍅' },
+            { name: 'Muối rắc tiêu',      price: 2000,  icon: '🧂' },
+            { name: 'Sốt BBQ',            price: 5000,  icon: '🥫' },
+        ],
+        'Trà Sữa Trân Châu': [
+            { name: 'Trân châu đen',      price: 5000,  icon: '⚫' },
+            { name: 'Trân châu trắng',    price: 5000,  icon: '⚪' },
+            { name: 'Thạch dừa',          price: 7000,  icon: '🥥' },
+            { name: 'Pudding trứng',      price: 8000,  icon: '🍮' },
+            { name: 'Size Lớn (L)',       price: 10000, icon: '⬆️' },
+        ],
+        'Coca Cola (L)': [
+            { name: 'Thêm đá',            price: 0,     icon: '🧊' },
+            { name: 'Chanh tươi',         price: 5000,  icon: '🍋' },
+        ],
+        '_default': [
+            { name: 'Phô mai',            price: 10000, icon: '🧀' },
+            { name: 'Trứng ốp la',        price: 8000,  icon: '🍳' },
+            { name: 'Xúc xích',           price: 12000, icon: '🌭' },
+            { name: 'Size Lớn (L)',       price: 15000, icon: '⬆️' },
+        ]
+    };
+
+    // ================================================
+    // BIẾN GLOBAL & DOM REFERENCES
+    // ================================================
     let currentBasePrice = 0;
     const modalImg = document.getElementById('modalDishImg');
     const modalName = document.getElementById('modalDishName');
@@ -258,7 +340,7 @@
     const modalBaseDishInput = document.getElementById('modalBaseDish');
     const modalQty = document.getElementById('modalQty');
     const modalTotalCalc = document.getElementById('modalTotalCalc');
-    const checkboxes = document.querySelectorAll('.topping-checkbox');
+    const toppingContainer = document.getElementById('toppingListContainer');
     const dishModal = new bootstrap.Modal(document.getElementById('dishModal'));
     const successToast = new bootstrap.Toast(document.getElementById('successToast'));
 
@@ -266,28 +348,72 @@
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
 
+    // ================================================
+    // RENDER TOPPING ĐỘNG THEO MÓN ĂN
+    // ================================================
+    function renderToppings(dishName) {
+        const toppings = TOPPING_DATA[dishName] || TOPPING_DATA['_default'];
+
+        if (!toppings || toppings.length === 0) {
+            toppingContainer.innerHTML = '<div class="topping-empty"><i class="bi bi-emoji-neutral"></i> Món này không có topping</div>';
+            return;
+        }
+
+        let html = '';
+        toppings.forEach(function(t, idx) {
+            html += '<label class="topping-item" id="topping-label-' + idx + '">'
+                + '<div class="d-flex align-items-center">'
+                + '<input class="form-check-input me-2 topping-checkbox" type="checkbox"'
+                + ' name="toppings" value="' + t.name + '_' + t.price + '" data-price="' + t.price + '"'
+                + ' onchange="toggleToppingStyle(this, ' + idx + '); calculateModalTotal();">'
+                + '<span class="topping-icon">' + t.icon + '</span>'
+                + '<span class="fw-medium">' + t.name + '</span>'
+                + '</div>'
+                + '<span class="topping-price-tag">+' + formatVND(t.price) + 'đ</span>'
+                + '</label>';
+        });
+
+        toppingContainer.innerHTML = html;
+    }
+
+    // Toggle highlight khi chọn/bỏ topping
+    function toggleToppingStyle(checkbox, idx) {
+        const label = document.getElementById('topping-label-' + idx);
+        if (label) {
+            label.classList.toggle('selected', checkbox.checked);
+        }
+    }
+
+    // ================================================
+    // TÍNH TỔNG GIÁ TRONG MODAL
+    // ================================================
     function calculateModalTotal() {
         let total = parseInt(currentBasePrice) || 0;
-        checkboxes.forEach(cb => {
-            if(cb.checked) total += parseInt(cb.dataset.price);
+        document.querySelectorAll('.topping-checkbox').forEach(cb => {
+            if (cb.checked) total += parseInt(cb.dataset.price);
         });
         total = total * parseInt(modalQty.value);
         modalTotalCalc.textContent = formatVND(total);
     }
 
+    // ================================================
+    // MỞ MODAL CHO MÓN ĂN
+    // ================================================
     function openDishModal(name, price, imgUrl) {
         currentBasePrice = price;
         modalName.textContent = name;
         modalPriceStr.textContent = formatVND(price) + 'đ';
         modalImg.src = imgUrl ? imgUrl : 'https://placehold.co/80x80?text=Food';
 
-        // Chuẩn bị value gửi POST giống phiên bản cũ (VD: "Gà rán_35000")
+        // Chuẩn bị value gửi POST (VD: "Gà rán_35000")
         modalBaseDishInput.value = name + "_" + price;
         document.getElementById('modalImageUrl').value = imgUrl ? imgUrl : '';
 
         // Reset form
         modalQty.value = 1;
-        checkboxes.forEach(cb => cb.checked = false);
+
+        // Render topping PHÙ HỢP cho món đang chọn
+        renderToppings(name);
 
         calculateModalTotal();
         dishModal.show();
@@ -296,15 +422,14 @@
     function updateQty(change) {
         let current = parseInt(modalQty.value);
         current += change;
-        if(current < 1) current = 1;
+        if (current < 1) current = 1;
         modalQty.value = current;
         calculateModalTotal();
     }
 
-    // Lắng nghe đổi checkbox Topping để tính lại giá
-    checkboxes.forEach(cb => cb.addEventListener('change', calculateModalTotal));
-
-    // AJAX Gọi ngầm thêm món
+    // ================================================
+    // AJAX: THÊM MÓN VÀO GIỎ
+    // ================================================
     function submitAddToCart() {
         const form = document.getElementById('addToCartForm');
         const formData = new FormData(form);
@@ -315,7 +440,7 @@
         })
         .then(response => response.json())
         .then(data => {
-            if(data.success) {
+            if (data.success) {
                 // Đóng modal
                 dishModal.hide();
                 // Hiện thông báo góc màn hình
@@ -326,7 +451,7 @@
                 badge.textContent = data.cartCount;
                 badge.style.display = 'inline-block';
 
-                // Bóp to nhỏ xíu tạo hiệu ứng
+                // Hiệu ứng nảy badge
                 badge.style.transform = 'scale(1.5)';
                 setTimeout(() => badge.style.transform = 'scale(1)', 300);
             } else {

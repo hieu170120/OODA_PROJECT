@@ -76,31 +76,9 @@
                     </div>
 
                     <h5 class="mt-4 mb-3 text-secondary">2. Chọn thêm Topping (Decorator)</h5>
-                    <div class="row g-2">
-                        <div class="col-md-6">
-                            <div class="form-check p-2 border rounded">
-                                <input class="form-check-input ms-1" type="checkbox" name="toppings" value="Trân châu đen_5000" id="top1">
-                                <label class="form-check-label ms-2 w-100" for="top1">Trân châu đen <span class="float-end text-muted">+5,000đ</span></label>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-check p-2 border rounded">
-                                <input class="form-check-input ms-1" type="checkbox" name="toppings" value="Trứng ốp la_8000" id="top2">
-                                <label class="form-check-label ms-2 w-100" for="top2">Trứng ốp la <span class="float-end text-muted">+8,000đ</span></label>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-check p-2 border rounded">
-                                <input class="form-check-input ms-1" type="checkbox" name="toppings" value="Phô mai_10000" id="top3">
-                                <label class="form-check-label ms-2 w-100" for="top3">Phô mai <span class="float-end text-muted">+10,000đ</span></label>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-check p-2 border rounded">
-                                <input class="form-check-input ms-1" type="checkbox" name="toppings" value="Size Lớn (L)_15000" id="top4">
-                                <label class="form-check-label ms-2 w-100" for="top4">Up Size Lớn <span class="float-end text-muted">+15,000đ</span></label>
-                            </div>
-                        </div>
+                    <!-- Container: JS sẽ render topping phù hợp khi chọn món chính -->
+                    <div id="orderToppingContainer" class="row g-2">
+                        <!-- Toppings sẽ được render động -->
                     </div>
 
                     <div class="row mt-4 align-items-end">
@@ -209,5 +187,113 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // ================================================
+    // DỮ LIỆU TOPPING TĨNH - PHÙ HỢP THEO TỪNG MÓN
+    // ================================================
+    const TOPPING_DATA = {
+        'Hamburger Bò Phô Mai': [
+            { name: 'Thêm phô mai',       price: 8000,  icon: '🧀' },
+            { name: 'Thêm patty bò',      price: 15000, icon: '🥩' },
+            { name: 'Bacon',               price: 12000, icon: '🥓' },
+            { name: 'Trứng ốp la',        price: 8000,  icon: '🍳' },
+            { name: 'Xà lách thêm',       price: 3000,  icon: '🥬' },
+        ],
+        'Kebab Thịt Gà': [
+            { name: 'Thêm thịt gà',       price: 15000, icon: '🍗' },
+            { name: 'Phô mai',            price: 8000,  icon: '🧀' },
+            { name: 'Sốt tỏi thêm',      price: 5000,  icon: '🧄' },
+            { name: 'Rau sống thêm',      price: 3000,  icon: '🥗' },
+            { name: 'Ớt cay',             price: 3000,  icon: '🌶️' },
+        ],
+        'Gà Rán Giòn (3 miếng)': [
+            { name: 'Thêm 2 miếng gà',    price: 25000, icon: '🍗' },
+            { name: 'Sốt cay Hàn Quốc',   price: 5000,  icon: '🌶️' },
+            { name: 'Khoai tây nghiền',   price: 10000, icon: '🥔' },
+            { name: 'Coleslaw',            price: 8000,  icon: '🥗' },
+        ],
+        'Pizza Hải Sản': [
+            { name: 'Phô mai thêm',       price: 15000, icon: '🧀' },
+            { name: 'Xúc xích',           price: 12000, icon: '🌭' },
+            { name: 'Thêm hải sản',       price: 20000, icon: '🦐' },
+            { name: 'Viền phô mai',       price: 18000, icon: '🫓' },
+        ],
+        'Hot Dog Xúc Xích': [
+            { name: 'Phô mai',            price: 8000,  icon: '🧀' },
+            { name: 'Thêm xúc xích',      price: 12000, icon: '🌭' },
+            { name: 'Hành phi',            price: 5000,  icon: '🧅' },
+            { name: 'Jalapeño',            price: 5000,  icon: '🌶️' },
+        ],
+        'Khoai Tây Chiên (L)': [
+            { name: 'Sốt phô mai',        price: 8000,  icon: '🧀' },
+            { name: 'Sốt cà chua thêm',   price: 3000,  icon: '🍅' },
+            { name: 'Muối rắc tiêu',      price: 2000,  icon: '🧂' },
+            { name: 'Sốt BBQ',            price: 5000,  icon: '🥫' },
+        ],
+        'Trà Sữa Trân Châu': [
+            { name: 'Trân châu đen',      price: 5000,  icon: '⚫' },
+            { name: 'Trân châu trắng',    price: 5000,  icon: '⚪' },
+            { name: 'Thạch dừa',          price: 7000,  icon: '🥥' },
+            { name: 'Pudding trứng',      price: 8000,  icon: '🍮' },
+            { name: 'Size Lớn (L)',       price: 10000, icon: '⬆️' },
+        ],
+        'Coca Cola (L)': [
+            { name: 'Thêm đá',            price: 0,     icon: '🧊' },
+            { name: 'Chanh tươi',         price: 5000,  icon: '🍋' },
+        ],
+        '_default': [
+            { name: 'Phô mai',            price: 10000, icon: '🧀' },
+            { name: 'Trứng ốp la',        price: 8000,  icon: '🍳' },
+            { name: 'Xúc xích',           price: 12000, icon: '🌭' },
+            { name: 'Size Lớn (L)',       price: 15000, icon: '⬆️' },
+        ]
+    };
+
+    function formatVND(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    // Render topping vào container dạng grid 2 cột
+    function renderOrderToppings(dishName) {
+        const container = document.getElementById('orderToppingContainer');
+        const toppings = TOPPING_DATA[dishName] || TOPPING_DATA['_default'];
+
+        if (!toppings || toppings.length === 0) {
+            container.innerHTML = '<div class="col-12 text-center text-muted py-2"><em>Không có topping cho món này</em></div>';
+            return;
+        }
+
+        let html = '';
+        toppings.forEach(function(t, idx) {
+            html += '<div class="col-md-6">'
+                + '<div class="form-check p-2 border rounded" style="cursor:pointer; transition: all 0.2s;">'
+                + '<input class="form-check-input ms-1" type="checkbox" name="toppings"'
+                + ' value="' + t.name + '_' + t.price + '" id="order-top-' + idx + '">'
+                + '<label class="form-check-label ms-2 w-100" for="order-top-' + idx + '" style="cursor:pointer;">'
+                + '<span style="font-size:1.1rem">' + t.icon + '</span> ' + t.name
+                + '<span class="float-end text-muted fw-bold">+' + formatVND(t.price) + 'đ</span>'
+                + '</label>'
+                + '</div>'
+                + '</div>';
+        });
+
+        container.innerHTML = html;
+    }
+
+    // Lắng nghe thay đổi radio button chọn món chính → render topping
+    document.querySelectorAll('input[name="baseDish"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            // Giá trị radio: "TênMón_Giá" => lấy tên món
+            const dishName = this.value.split('_')[0];
+            renderOrderToppings(dishName);
+        });
+    });
+
+    // Render topping cho món đầu tiên (đã checked sẵn)
+    const checkedDish = document.querySelector('input[name="baseDish"]:checked');
+    if (checkedDish) {
+        renderOrderToppings(checkedDish.value.split('_')[0]);
+    }
+</script>
 </body>
 </html>

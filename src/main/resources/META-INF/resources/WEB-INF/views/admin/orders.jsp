@@ -232,58 +232,71 @@
                 <tbody>
                     <c:forEach items="${orders}" var="order">
                         <tr>
-                            <td>
-                                <code style="background-color: #f3f4f6; padding: 4px 8px; border-radius: 4px;">
-                                    ${order.orderId}
-                                </code>
-                            </td>
-                            <td>${order.customerName}</td>
-                            <td class="text-truncate" title="${order.shippingAddress}">
-                                ${order.shippingAddress}
-                            </td>
-                            <td>
-                                <strong>
-                                    <fmt:formatNumber value="${order.totalAmount}" type="number" groupingUsed="true" maxFractionDigits="0" /> đ
-                                </strong>
-                            </td>
-                            <td>
-                                <c:choose>
-                                    <c:when test="${order.paymentStatus == 'COMPLETED'}">
-                                        <span class="badge bg-success">Đã Thanh Toán</span>
-                                    </c:when>
-                                    <c:when test="${order.paymentStatus == 'PENDING'}">
-                                        <span class="badge bg-warning">Chờ Thanh Toán</span>
-                                    </c:when>
-                                    <c:when test="${order.paymentStatus == 'FAILED'}">
-                                        <span class="badge bg-danger">Thất Bại</span>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <span class="badge bg-secondary">N/A</span>
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
-                            <td>
-                                <form action="${pageContext.request.contextPath}/admin/orders/${order.orderId}/status" method="post" class="d-flex align-items-center">
-                                    <select name="status" class="form-select form-select-sm me-2">
-                                        <c:choose>
-                                            <c:when test="${not empty selectableByStatus}">
-                                                <c:forEach items="${selectableByStatus[order.status]}" var="statusOpt">
-                                                    <option value="${statusOpt}" ${statusOpt == order.status ? 'selected' : '' }>
-                                                        ${statusOpt}
-                                                    </option>
-                                                </c:forEach>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <c:forEach items="${statuses}" var="statusOpt">
-                                                    <option value="${statusOpt}" ${statusOpt == order.status ? 'selected' : '' }>
-                                                        ${statusOpt}
-                                                    </option>
-                                                </c:forEach>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </select>
-                            </td>
-                            <td class="text-center">
+                            <th width="12%">Ma Don</th>
+                            <th width="15%">Khach Hang</th>
+                            <th width="18%">Dia Chi</th>
+                            <th width="14%">Thoi gian</th>
+                            <th width="12%">Tong Tien</th>
+                            <th width="10%">Thanh Toan</th>
+                            <th width="13%">Trang Thai</th>
+                            <th width="6%" class="text-center">Luu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach items="${orders}" var="order">
+                            <tr>
+                                <td>
+                                    <code style="background-color: #f3f4f6; padding: 4px 8px; border-radius: 4px;">
+                                        ${order.orderId}
+                                    </code>
+                                </td>
+                                <td>${order.customerName}</td>
+                                <td class="text-truncate" title="${order.shippingAddress}">
+                                    ${order.shippingAddress}
+                                </td>
+                                <td>
+                                    <c:if test="${not empty order.orderTime}">
+                                        <small><fmt:parseDate value="${order.orderTime}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedTime" type="both" /><fmt:formatDate value="${parsedTime}" pattern="dd/MM/yyyy HH:mm" /></small>
+                                    </c:if>
+                                    <c:if test="${empty order.orderTime}">
+                                        <small class="text-muted">N/A</small>
+                                    </c:if>
+                                </td>
+                                <td>
+                                    <strong>
+                                        <fmt:formatNumber value="${order.totalAmount}" type="number"
+                                            groupingUsed="true" maxFractionDigits="0" />d
+                                    </strong>
+                                </td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${order.paymentStatus == 'COMPLETED'}">
+                                            <span class="badge bg-success">Da thanh toan</span>
+                                        </c:when>
+                                        <c:when test="${order.paymentStatus == 'PENDING'}">
+                                            <span class="badge bg-warning">Cho thanh toan</span>
+                                        </c:when>
+                                        <c:when test="${order.paymentStatus == 'FAILED'}">
+                                            <span class="badge bg-danger">That bai</span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="badge bg-secondary">N/A</span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td>
+                                    <form
+                                        action="${pageContext.request.contextPath}/admin/orders/${order.orderId}/status"
+                                        method="post" style="display: inline;">
+                                        <select name="status" class="form-select form-select-sm">
+                                            <c:forEach items="${selectableByStatus[order.status]}" var="statusOpt">
+                                                <option value="${statusOpt}" ${statusOpt == order.status ? 'selected' : ''}>
+                                                    ${statusOpt}
+                                                </option>
+                                            </c:forEach>
+                                        </select>
+                                </td>
+                                <td class="text-center">
                                     <button type="submit" class="btn btn-sm btn-success">
                                         <i class="fa-solid fa-check"></i>
                                     </button>
