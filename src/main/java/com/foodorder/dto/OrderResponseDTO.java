@@ -1,10 +1,10 @@
 package com.foodorder.dto;
 
-import com.foodorder.model.Order;
-import com.foodorder.model.Payment;
-import com.foodorder.model.enums.OrderStatus;
-import com.foodorder.model.enums.PaymentMethod;
-import com.foodorder.model.enums.PaymentStatus;
+import com.foodorder.entity.Order;
+import com.foodorder.entity.Payment;
+import com.foodorder.enums.OrderStatus;
+import com.foodorder.enums.PaymentMethod;
+import com.foodorder.enums.PaymentStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,23 +30,23 @@ public class OrderResponseDTO {
     public OrderResponseDTO() {
     }
 
-    public static OrderResponseDTO fromDomain(Order order) {
+    public static OrderResponseDTO fromEntity(Order order) {
         OrderResponseDTO dto = new OrderResponseDTO();
         dto.setOrderId(order.getOrderId());
         if (order.getCustomer() != null) {
             dto.setCustomerName(order.getCustomer().getFullName());
         }
         dto.setOrderTime(order.getOrderTime());
-        dto.setSubTotal(order.getSubTotal());
-        dto.setShippingFee(order.getShippingFee());
-        dto.setTotalAmount(order.getTotalAmount() > 0 ? order.getTotalAmount() : order.calculateTotal());
-        dto.setShippingAddress(order.getShippingAddress());
-        dto.setEstimatedPickupTime(order.getEstimatedPickupTime());
+        dto.setSubTotal(order.calculateSubTotal());
+        dto.setShippingFee(0);
+        dto.setTotalAmount(order.calculateTotal());
+        dto.setShippingAddress(null);
+        dto.setEstimatedPickupTime(null);
         dto.setStatus(order.getStatus());
 
         if (order.getOrderItems() != null) {
             dto.setOrderItems(order.getOrderItems().stream()
-                    .map(CartItemDTO::fromDomain)
+                    .map(CartItemDTO::fromEntity)
                     .collect(Collectors.toList()));
         }
 

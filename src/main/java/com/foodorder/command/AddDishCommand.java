@@ -3,9 +3,6 @@ package com.foodorder.command;
 import com.foodorder.entity.Dish;
 import com.foodorder.repository.DishRepository;
 
-import lombok.AllArgsConstructor;
-
-@AllArgsConstructor
 public class AddDishCommand implements ICommand {
     private final DishRepository repository;
     private final Dish dish;
@@ -21,5 +18,10 @@ public class AddDishCommand implements ICommand {
     public void undo() {
         System.out.println("Removing dish: " + dish.getName());
         repository.delete(dish);
+    }
+
+    public AddDishCommand(DishRepository repository, Dish dish) {
+        this.repository = repository;
+        this.dish = dish;
     }
 }

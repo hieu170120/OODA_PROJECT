@@ -1,13 +1,13 @@
 package com.foodorder.controller;
 
-import com.foodorder.decorator.IDish;
 import com.foodorder.dto.CartItemDTO;
-import com.foodorder.dto.OrderResponseDTO;
 import com.foodorder.dto.CustomerDTO;
-import com.foodorder.model.Coupon;
-import com.foodorder.model.Customer;
-import com.foodorder.model.Order;
-import com.foodorder.model.OrderItem;
+import com.foodorder.dto.OrderResponseDTO;
+import com.foodorder.entity.Coupon;
+import com.foodorder.entity.Customer;
+import com.foodorder.entity.Dish;
+import com.foodorder.entity.Order;
+import com.foodorder.entity.OrderItem;
 import com.foodorder.service.CartService;
 import com.foodorder.service.CouponService;
 import com.foodorder.service.OrderService;
@@ -27,10 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * Controller quản lý giỏ hàng và thanh toán.
- * Tất cả business logic đã được ủy quyền (delegate) cho CartService / OrderService.
- */
 @Controller
 public class CartController {
 
@@ -45,9 +41,6 @@ public class CartController {
         this.couponService = couponService;
     }
 
-    // ==========================================
-    // LẤY GIỎ HÀNG TỪ SESSION
-    // ==========================================
     @SuppressWarnings("unchecked")
     private List<OrderItem> getCartFromSession(HttpSession session) {
         List<OrderItem> cart = (List<OrderItem>) session.getAttribute("CART");
@@ -58,9 +51,6 @@ public class CartController {
         return cart;
     }
 
-    // ==========================================
-    // HIỂN THỊ TRANG GIỎ HÀNG
-    // ==========================================
     private Order buildPreviewOrder(List<OrderItem> cart) {
         Order previewOrder = new Order();
         previewOrder.setOrderTime(LocalDateTime.now());
@@ -76,10 +66,8 @@ public class CartController {
         }
 
         List<OrderItem> cart = getCartFromSession(session);
-
-        // Chuyển Domain → DTO trước khi đưa ra View (3-Tier)
         List<CartItemDTO> cartItemDTOs = cart.stream()
-                .map(CartItemDTO::fromDomain)
+                .map(CartItemDTO::fromEntity)
                 .collect(Collectors.toList());
 
         model.addAttribute("user", loggedInUser);
@@ -88,40 +76,27 @@ public class CartController {
         model.addAttribute("cartCount", cartService.calculateCount(cart));
         model.addAttribute("couponOptions", couponService.getCouponOptions(buildPreviewOrder(cart)));
         model.addAttribute("enteredCouponCode", "");
-
         return "cart";
     }
 
-    // ==========================================
-    // API AJAX: THÊM MÓN VÀO GIỎ
-    // ==========================================
     @PostMapping("/api/cart/add")
     @ResponseBody
-    public ResponseEntity<?> addDishToCartAjax(
-            @RequestParam("baseDish") String baseDishStr,
-            @RequestParam(value = "toppings", required = false) List<String> toppings,
-            @RequestParam("quantity") int quantity,
-            @RequestParam(value = "imageUrl", defaultValue = "") String imageUrl,
-            HttpSession session
-    ) {
+    public ResponseEntity<?> addDishToCartAjax(@RequestParam("baseDish") String baseDishStr,
+                                               @RequestParam(value = "toppings", required = false) List<String> toppings,
+                                               @RequestParam("quantity") int quantity,
+                                               @RequestParam(value = "imageUrl", defaultValue = "") String imageUrl,
+                                               HttpSession session) {
         CustomerDTO loggedInUser = (CustomerDTO) session.getAttribute("LOGGED_IN_USER");
         if (loggedInUser == null) {
-            return ResponseEntity.status(401).body(Map.of("error", "Chưa đăng nhập"));
+            return ResponseEntity.status(401).body(Map.of("error", "Chua dang nhap"));
         }
 
-        // Delegate business logic cho CartService
-        IDish finalDish = cartService.createDishWithToppings(baseDishStr, toppings, imageUrl);
-
+        Dish finalDish = cartService.createDishWithToppings(baseDishStr, toppings, imageUrl);
         List<OrderItem> cart = getCartFromSession(session);
         cartService.addItemToCart(cart, finalDish, quantity);
-
-        int newCartCount = cartService.calculateCount(cart);
-        return ResponseEntity.ok(Map.of("success", true, "cartCount", newCartCount));
+        return ResponseEntity.ok(Map.of("success", true, "cartCount", cartService.calculateCount(cart)));
     }
 
-    // ==========================================
-    // XÓA MÓN KHỎI GIỎ
-    // ==========================================
     @PostMapping("/cart/remove-item")
     public String removeItemFromCart(@RequestParam("orderItemId") String orderItemId, HttpSession session) {
         CustomerDTO loggedInUser = (CustomerDTO) session.getAttribute("LOGGED_IN_USER");
@@ -129,32 +104,24 @@ public class CartController {
             return "redirect:/login";
         }
 
-        List<OrderItem> cart = getCartFromSession(session);
-        cartService.removeItem(cart, orderItemId);
+        cartService.removeItem(getCartFromSession(session), orderItemId);
         return "redirect:/cart";
     }
 
-    // ==========================================
-    // TĂNG/GIẢM SỐ LƯỢNG (AJAX)
-    // ==========================================
     @PostMapping("/cart/update-quantity")
     @ResponseBody
-    public ResponseEntity<?> updateCartItemQuantity(
-            @RequestParam("orderItemId") String orderItemId,
-            @RequestParam("action") String action,
-            HttpSession session
-    ) {
+    public ResponseEntity<?> updateCartItemQuantity(@RequestParam("orderItemId") String orderItemId,
+                                                    @RequestParam("action") String action,
+                                                    HttpSession session) {
         CustomerDTO loggedInUser = (CustomerDTO) session.getAttribute("LOGGED_IN_USER");
         if (loggedInUser == null) {
-            return ResponseEntity.status(401).body(Map.of("error", "Chưa đăng nhập"));
+            return ResponseEntity.status(401).body(Map.of("error", "Chua dang nhap"));
         }
 
         List<OrderItem> cart = getCartFromSession(session);
-
-        // Delegate tìm kiếm cho CartService
         OrderItem targetItem = cartService.findItem(cart, orderItemId);
         if (targetItem == null) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Không tìm thấy món"));
+            return ResponseEntity.badRequest().body(Map.of("error", "Khong tim thay mon"));
         }
 
         if ("increase".equals(action)) {
@@ -179,25 +146,19 @@ public class CartController {
         ));
     }
 
-    // ==========================================
-    // XÁC NHẬN ĐẶT HÀNG (CHECKOUT)
-    // ==========================================
     @PostMapping("/cart/checkout")
-    public String processCheckout(
-            @RequestParam(value = "customerName", required = false) String customerName,
-            @RequestParam("address") String address,
-            @RequestParam(value = "couponCode", required = false) String couponCode,
-            @RequestParam(value = "paymentMethod", defaultValue = "COD") String paymentMethod,
-            Model model,
-            HttpSession session
-    ) {
+    public String processCheckout(@RequestParam(value = "customerName", required = false) String customerName,
+                                  @RequestParam("address") String address,
+                                  @RequestParam(value = "couponCode", required = false) String couponCode,
+                                  @RequestParam(value = "paymentMethod", defaultValue = "COD") String paymentMethod,
+                                  Model model,
+                                  HttpSession session) {
         CustomerDTO loggedInUser = (CustomerDTO) session.getAttribute("LOGGED_IN_USER");
         if (loggedInUser == null) {
             return "redirect:/login";
         }
 
         List<OrderItem> cart = getCartFromSession(session);
-
         if (cart.isEmpty()) {
             return "redirect:/cart";
         }
@@ -207,50 +168,37 @@ public class CartController {
         customer.setFullName((customerName != null && !customerName.isBlank()) ? customerName : loggedInUser.getFullName());
 
         Order previewOrder = buildPreviewOrder(cart);
-
         Coupon coupon;
         try {
             coupon = couponService.resolveCoupon(couponCode, previewOrder);
         } catch (IllegalArgumentException ex) {
-            // Populate lại cart với lỗi coupon
-            List<CartItemDTO> cartItemDTOs = cart.stream().map(CartItemDTO::fromDomain).collect(Collectors.toList());
-            model.addAttribute("user", loggedInUser);
-            model.addAttribute("cartItems", cartItemDTOs);
-            model.addAttribute("cartTotal", cartService.calculateTotal(cart));
-            model.addAttribute("cartCount", cartService.calculateCount(cart));
-            model.addAttribute("couponOptions", couponService.getCouponOptions(previewOrder));
-            model.addAttribute("enteredCouponCode", couponCode);
-            model.addAttribute("checkoutError", ex.getMessage());
+            repopulateCart(model, loggedInUser, cart, previewOrder, couponCode, ex.getMessage());
             return "cart";
         }
 
         Order completedOrder;
         try {
-            // Delegate nghiệp vụ đặt hàng cho OrderService (Builder & Strategy Pattern)
-            // OrderService sẽ normalize paymentMethod string (COD, BANKING, etc.)
             completedOrder = orderService.createDeliveryOrder(customer, cart, address, coupon, paymentMethod);
         } catch (IllegalArgumentException ex) {
-            List<CartItemDTO> cartItemDTOs = cart.stream().map(CartItemDTO::fromDomain).collect(Collectors.toList());
-            model.addAttribute("user", loggedInUser);
-            model.addAttribute("cartItems", cartItemDTOs);
-            model.addAttribute("cartTotal", cartService.calculateTotal(cart));
-            model.addAttribute("cartCount", cartService.calculateCount(cart));
-            model.addAttribute("couponOptions", couponService.getCouponOptions(previewOrder));
-            model.addAttribute("enteredCouponCode", couponCode);
-            model.addAttribute("checkoutError", ex.getMessage());
+            repopulateCart(model, loggedInUser, cart, previewOrder, couponCode, ex.getMessage());
             return "cart";
         }
 
-        // Chuyển Domain → DTO trước khi đưa ra View (3-Tier)
-        model.addAttribute("order", OrderResponseDTO.fromDomain(completedOrder));
-        double appliedDiscount = completedOrder.getCoupon() != null
-                ? completedOrder.getCoupon().calculateDiscount(completedOrder)
-                : 0;
-        model.addAttribute("appliedDiscount", appliedDiscount);
-
-        // Đặt thành công → Xóa giỏ
+        model.addAttribute("order", OrderResponseDTO.fromEntity(completedOrder));
+        model.addAttribute("appliedDiscount", coupon != null ? coupon.calculateDiscount(completedOrder) : 0.0);
         session.removeAttribute("CART");
-
         return "order-success";
+    }
+
+    private void repopulateCart(Model model, CustomerDTO loggedInUser, List<OrderItem> cart,
+                                Order previewOrder, String couponCode, String errorMessage) {
+        List<CartItemDTO> cartItemDTOs = cart.stream().map(CartItemDTO::fromEntity).collect(Collectors.toList());
+        model.addAttribute("user", loggedInUser);
+        model.addAttribute("cartItems", cartItemDTOs);
+        model.addAttribute("cartTotal", cartService.calculateTotal(cart));
+        model.addAttribute("cartCount", cartService.calculateCount(cart));
+        model.addAttribute("couponOptions", couponService.getCouponOptions(previewOrder));
+        model.addAttribute("enteredCouponCode", couponCode);
+        model.addAttribute("checkoutError", errorMessage);
     }
 }

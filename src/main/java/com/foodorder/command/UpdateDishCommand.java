@@ -3,7 +3,6 @@ package com.foodorder.command;
 import com.foodorder.entity.Dish;
 import com.foodorder.repository.DishRepository;
 
-import lombok.AllArgsConstructor;
 
 public class UpdateDishCommand implements ICommand {
     private final DishRepository repository;

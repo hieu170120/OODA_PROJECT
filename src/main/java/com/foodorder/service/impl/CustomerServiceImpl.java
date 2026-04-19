@@ -3,13 +3,13 @@ package com.foodorder.service.impl;
 import com.foodorder.entity.Customer;
 import com.foodorder.repository.CustomerRepository;
 import com.foodorder.service.CustomerService;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
 @Service
-@RequiredArgsConstructor
+
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
@@ -31,5 +31,9 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setCreatedAt(LocalDateTime.now());
         customer.setRewardPoints(0);
         return customerRepository.save(customer);
+    }
+
+    public CustomerServiceImpl(CustomerRepository customerRepository) {
+        this.customerRepository = customerRepository;
     }
 }

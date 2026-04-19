@@ -1,6 +1,6 @@
 package com.foodorder.repository;
 
-import com.foodorder.model.Order;
+import com.foodorder.entity.Order;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

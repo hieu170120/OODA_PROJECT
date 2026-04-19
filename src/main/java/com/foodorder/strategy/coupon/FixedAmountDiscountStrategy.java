@@ -1,6 +1,6 @@
 package com.foodorder.strategy.coupon;
 
-import com.foodorder.model.Order;
+import com.foodorder.entity.Order;
 
 public class FixedAmountDiscountStrategy implements DiscountStrategy {
     private double amount;

@@ -1,12 +1,7 @@
 package com.foodorder.service;
 
-import com.foodorder.model.Coupon;
-import com.foodorder.model.Order;
-import com.foodorder.specification.CompositeEligibilityRule;
-import com.foodorder.specification.DateRangeRule;
-import com.foodorder.specification.MinOrderRule;
-import com.foodorder.strategy.coupon.FixedAmountDiscountStrategy;
-import com.foodorder.strategy.coupon.PercentageDiscountStrategy;
+import com.foodorder.entity.Coupon;
+import com.foodorder.entity.Order;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -57,16 +52,13 @@ public class CouponService {
             return null;
         }
 
-        String normalizedCode = rawCode.trim().toUpperCase();
-        Coupon coupon = getCouponByCode(normalizedCode);
-
+        Coupon coupon = getCouponByCode(rawCode.trim().toUpperCase());
         if (coupon == null) {
-            throw new IllegalArgumentException("Mã coupon không tồn tại.");
+            throw new IllegalArgumentException("Ma coupon khong ton tai.");
         }
         if (!coupon.isValid(previewOrder)) {
-            throw new IllegalArgumentException("Mã coupon chưa đủ điều kiện áp dụng.");
+            throw new IllegalArgumentException("Ma coupon chua du dieu kien ap dung.");
         }
-
         return coupon;
     }
 
@@ -89,123 +81,47 @@ public class CouponService {
 
     private List<Coupon> getCouponCatalog() {
         LocalDateTime now = LocalDateTime.now();
-
         return List.of(
-                buildPercentageCoupon(
-                        "CP-SAVE10",
-                        "SAVE10",
-                        10,
-                        30000,
-                        50000,
-                        now.minusDays(30),
-                        now.plusMonths(6)
-                ),
-                buildFixedCoupon(
-                        "CP-FREESHIP15",
-                        "FREESHIP15",
-                        15000,
-                        30000,
-                        now.minusDays(30),
-                        now.plusMonths(6)
-                ),
-                buildFixedCoupon(
-                        "CP-BIGSALE50",
-                        "BIGSALE50",
-                        50000,
-                        200000,
-                        now.minusDays(7),
-                        now.plusDays(30)
-                )
+                buildCoupon("SAVE10", 10000.0, 50000.0, now.minusDays(30), now.plusMonths(6)),
+                buildCoupon("FREESHIP15", 15000.0, 30000.0, now.minusDays(30), now.plusMonths(6)),
+                buildCoupon("BIGSALE50", 50000.0, 200000.0, now.minusDays(7), now.plusDays(30))
         );
     }
 
     private CouponOption buildOption(Coupon coupon, Order previewOrder) {
         String description = buildDescription(coupon);
-
         if (previewOrder == null) {
-            return new CouponOption(coupon.getCouponCode(), description, false, 0,
-                    "Chưa có dữ liệu đơn hàng để kiểm tra điều kiện.");
+            return new CouponOption(coupon.getCouponCode(), description, false, 0.0,
+                    "Chua co du lieu don hang de kiem tra dieu kien.");
         }
 
-        LocalDateTime now = LocalDateTime.now();
-        if (coupon.getValidFrom() != null && now.isBefore(coupon.getValidFrom())) {
-            return new CouponOption(coupon.getCouponCode(), description, false, 0,
-                    "Coupon chưa tới thời gian áp dụng.");
-        }
-        if (coupon.getValidUntil() != null && now.isAfter(coupon.getValidUntil())) {
-            return new CouponOption(coupon.getCouponCode(), description, false, 0,
-                    "Coupon đã hết hạn.");
+        if (!coupon.isValid(previewOrder)) {
+            return new CouponOption(coupon.getCouponCode(), description, false, 0.0,
+                    "Coupon chua du dieu kien ap dung.");
         }
 
-        double subtotal = previewOrder.calculateSubtotalAmount();
-        if (subtotal < coupon.getMinOrderValue()) {
-            double missing = coupon.getMinOrderValue() - subtotal;
-            return new CouponOption(coupon.getCouponCode(), description, false, 0,
-                    "Cần mua thêm " + formatMoney(missing) + "đ để dùng mã này.");
-        }
-
-        double estimated = coupon.calculateDiscount(previewOrder);
-        return new CouponOption(coupon.getCouponCode(), description, true, estimated,
-                "Đủ điều kiện áp dụng.");
+        return new CouponOption(coupon.getCouponCode(), description, true, coupon.calculateDiscount(previewOrder),
+                "Du dieu kien ap dung.");
     }
 
     private String buildDescription(Coupon coupon) {
-        if (coupon.isPercentage()) {
-            double maxDiscount = 0;
-            if (coupon.getDiscountStrategy() instanceof PercentageDiscountStrategy percentageStrategy) {
-                maxDiscount = percentageStrategy.getMaxDiscount();
-            }
-            if (maxDiscount > 0) {
-                return String.format("Giảm %.0f%%, tối đa %sđ (đơn từ %sđ)",
-                        coupon.getDiscountValue(),
-                        formatMoney(maxDiscount),
-                        formatMoney(coupon.getMinOrderValue()));
-            }
-            return String.format("Giảm %.0f%% (đơn từ %sđ)",
-                    coupon.getDiscountValue(),
-                    formatMoney(coupon.getMinOrderValue()));
-        }
-
-        return String.format("Giảm %sđ (đơn từ %sđ)",
-                formatMoney(coupon.getDiscountValue()),
-                formatMoney(coupon.getMinOrderValue()));
+        return String.format("Giam %sđ (don tu %sđ)",
+                formatMoney(coupon.getDiscountValue() != null ? coupon.getDiscountValue() : 0.0),
+                formatMoney(coupon.getMinOrderValue() != null ? coupon.getMinOrderValue() : 0.0));
     }
 
     private String formatMoney(double amount) {
         return String.format("%,.0f", Math.max(amount, 0));
     }
 
-    private Coupon buildPercentageCoupon(String id,
-                                         String code,
-                                         double percent,
-                                         double maxDiscount,
-                                         double minOrderValue,
-                                         LocalDateTime validFrom,
-                                         LocalDateTime validUntil) {
-        Coupon coupon = new Coupon(id, code, percent, minOrderValue, true, validFrom, validUntil);
-        coupon.setDiscountStrategy(new PercentageDiscountStrategy(percent, maxDiscount));
-        coupon.setEligibilityRule(buildEligibilityRule(minOrderValue, validFrom, validUntil));
+    private Coupon buildCoupon(String id, double discountValue, double minOrderValue,
+                               LocalDateTime validFrom, LocalDateTime validUntil) {
+        Coupon coupon = new Coupon();
+        coupon.setId(id);
+        coupon.setDiscountValue(discountValue);
+        coupon.setMinOrderValue(minOrderValue);
+        coupon.setValidFrom(validFrom);
+        coupon.setValidUntil(validUntil);
         return coupon;
-    }
-
-    private Coupon buildFixedCoupon(String id,
-                                    String code,
-                                    double amount,
-                                    double minOrderValue,
-                                    LocalDateTime validFrom,
-                                    LocalDateTime validUntil) {
-        Coupon coupon = new Coupon(id, code, amount, minOrderValue, false, validFrom, validUntil);
-        coupon.setDiscountStrategy(new FixedAmountDiscountStrategy(amount));
-        coupon.setEligibilityRule(buildEligibilityRule(minOrderValue, validFrom, validUntil));
-        return coupon;
-    }
-
-    private CompositeEligibilityRule buildEligibilityRule(double minOrderValue,
-                                                          LocalDateTime validFrom,
-                                                          LocalDateTime validUntil) {
-        CompositeEligibilityRule compositeRule = new CompositeEligibilityRule();
-        compositeRule.addRule(new MinOrderRule(minOrderValue));
-        compositeRule.addRule(new DateRangeRule(validFrom, validUntil));
-        return compositeRule;
     }
 }

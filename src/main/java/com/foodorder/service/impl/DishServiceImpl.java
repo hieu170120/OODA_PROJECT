@@ -10,10 +10,9 @@ import com.foodorder.command.UpdateDishCommand;
 import com.foodorder.entity.Dish;
 import com.foodorder.repository.DishRepository;
 import com.foodorder.service.DishService;
-import lombok.AllArgsConstructor;
 
 @Service
-@AllArgsConstructor
+
 public class DishServiceImpl implements DishService {
     private final DishRepository dishRepository;
     private final CommandManager commandManager;
@@ -40,4 +39,9 @@ public class DishServiceImpl implements DishService {
         commandManager.executeCommand(new DeleteDishCommand(dishRepository, dishInDB));
     }
 
+
+    public DishServiceImpl(DishRepository dishRepository, CommandManager commandManager) {
+        this.dishRepository = dishRepository;
+        this.commandManager = commandManager;
+    }
 }

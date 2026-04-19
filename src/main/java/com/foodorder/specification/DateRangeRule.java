@@ -1,6 +1,6 @@
 package com.foodorder.specification;
 
-import com.foodorder.model.Order;
+import com.foodorder.entity.Order;
 
 import java.time.LocalDateTime;
 

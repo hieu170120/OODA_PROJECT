@@ -3,13 +3,13 @@ package com.foodorder.service.impl;
 import com.foodorder.entity.User;
 import com.foodorder.repository.UserRepository;
 import com.foodorder.service.UserService;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
 @Service
-@RequiredArgsConstructor
+
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -32,5 +32,9 @@ public class UserServiceImpl implements UserService {
         }
         user.setCreatedAt(LocalDateTime.now());
         return userRepository.save(user);
+    }
+
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 }

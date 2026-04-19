@@ -1,6 +1,6 @@
 package com.foodorder.strategy.coupon;
 
-import com.foodorder.model.Order;
+import com.foodorder.entity.Order;
 
 public class PercentageDiscountStrategy implements DiscountStrategy {
     private double percent;
@@ -20,7 +20,7 @@ public class PercentageDiscountStrategy implements DiscountStrategy {
             return 0;
         }
 
-        double discount = order.calculateSubtotalAmount() * (percent / 100.0);
+        double discount = order.calculateSubTotal() * (percent / 100.0);
         if (maxDiscount > 0 && discount > maxDiscount) {
             discount = maxDiscount;
         }

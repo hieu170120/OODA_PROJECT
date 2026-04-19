@@ -1,6 +1,6 @@
 package com.foodorder.strategy.payment;
 
-import com.foodorder.model.enums.PaymentMethod;
+import com.foodorder.enums.PaymentMethod;
 import org.springframework.stereotype.Component;
 
 /**

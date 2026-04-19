@@ -1,11 +1,7 @@
 package com.foodorder.dto;
 
-import com.foodorder.model.OrderItem;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.foodorder.entity.OrderItem;
 
-@Data
-@NoArgsConstructor
 public class CartItemDTO {
     private String orderItemId;
     private String dishName;
@@ -13,7 +9,10 @@ public class CartItemDTO {
     private int quantity;
     private double subTotal;
 
-    public static CartItemDTO fromDomain(OrderItem orderItem) {
+    public CartItemDTO() {
+    }
+
+    public static CartItemDTO fromEntity(OrderItem orderItem) {
         if (orderItem == null) return null;
         CartItemDTO dto = new CartItemDTO();
         dto.setOrderItemId(orderItem.getOrderItemId());
@@ -24,9 +23,51 @@ public class CartItemDTO {
             dto.setDishName("Món không xác định");
         }
         
-        dto.setUnitPrice(orderItem.getUnitPriceAtPurchase());
+        dto.setUnitPrice(orderItem.getDish() != null && orderItem.getDish().getPrice() != null
+                ? orderItem.getDish().getPrice()
+                : 0.0);
         dto.setQuantity(orderItem.getQuantity());
         dto.setSubTotal(orderItem.calculateSubTotal());
         return dto;
+    }
+
+    public String getOrderItemId() {
+        return orderItemId;
+    }
+
+    public void setOrderItemId(String orderItemId) {
+        this.orderItemId = orderItemId;
+    }
+
+    public String getDishName() {
+        return dishName;
+    }
+
+    public void setDishName(String dishName) {
+        this.dishName = dishName;
+    }
+
+    public double getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(double unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public double getSubTotal() {
+        return subTotal;
+    }
+
+    public void setSubTotal(double subTotal) {
+        this.subTotal = subTotal;
     }
 }

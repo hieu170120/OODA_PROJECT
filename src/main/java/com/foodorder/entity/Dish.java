@@ -1,11 +1,10 @@
 package com.foodorder.entity;
 import jakarta.persistence.*;
-import lombok.*;
 
 @Entity
 @Table(name = "dishes")
-@Data
-@NoArgsConstructor
+
+
 public class Dish {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -39,6 +38,7 @@ public class Dish {
     public static DishBuilder builder() {
         return new DishBuilder();
     }
+
 
     public static class DishBuilder {
         private String dishId;
@@ -77,4 +77,47 @@ public class Dish {
         }
     }
 
+
+    public Dish() {
+    }
+
+    public String getDishId() {
+        return dishId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDishId(String dishId) {
+        this.dishId = dishId;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

@@ -1,6 +1,6 @@
 package com.foodorder.state.order;
 
-import com.foodorder.model.enums.OrderStatus;
+import com.foodorder.enums.OrderStatus;
 
 public class InvalidOrderTransitionException extends IllegalStateException {
 

@@ -1,10 +1,10 @@
 package com.foodorder.builder;
 
-import com.foodorder.model.enums.OrderStatus;
-import com.foodorder.model.Payment;
-import com.foodorder.model.Customer;
-import com.foodorder.model.Order;
-import com.foodorder.model.OrderItem;
+import com.foodorder.entity.Payment;
+import com.foodorder.entity.Customer;
+import com.foodorder.entity.Order;
+import com.foodorder.entity.OrderItem;
+import com.foodorder.enums.OrderStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,19 +30,14 @@ public class DeliveryOrderBuilder implements IOrderBuilder {
 
     @Override
     public void buildItems(List<OrderItem> items) {
-        this.result.setOrderItems(items);              
-        double subTotal = 0;
+        this.result.setOrderItems(items);
         for (OrderItem item : items) {
-            subTotal += item.calculateSubTotal();     
+            item.setOrder(this.result);
         }
-        this.result.setSubTotal(subTotal);
     }
 
     @Override
     public void buildDeliveryInfo(String address, LocalDateTime pickupTime) {
-        this.result.setShippingAddress(address);       
-        this.result.setEstimatedPickupTime(pickupTime);
-        this.result.setShippingFee(15000.0);            
     }
 
     @Override

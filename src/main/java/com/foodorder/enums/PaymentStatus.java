@@ -1,4 +1,4 @@
-package com.foodorder.model.enums;
+package com.foodorder.enums;
 
 public enum PaymentStatus {
     PENDING,

@@ -1,17 +1,26 @@
 package com.foodorder.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 @Entity
 @Table(name = "customers")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-@PrimaryKeyJoinColumn(name = "id")
+@PrimaryKeyJoinColumn(name = "customer_id")
 public class Customer extends User {
     @Column(name = "reward_points")
     private int rewardPoints;
 
+    public Customer() {
+    }
+
+    public Customer(int rewardPoints) {
+        this.rewardPoints = rewardPoints;
+    }
+
+    public int getRewardPoints() {
+        return rewardPoints;
+    }
+
+    public void setRewardPoints(int rewardPoints) {
+        this.rewardPoints = rewardPoints;
+    }
 }

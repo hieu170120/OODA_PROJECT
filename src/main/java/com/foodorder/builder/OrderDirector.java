@@ -1,8 +1,8 @@
 package com.foodorder.builder;
 
-import com.foodorder.model.Payment;
-import com.foodorder.model.Customer;
-import com.foodorder.model.OrderItem;
+import com.foodorder.entity.Payment;
+import com.foodorder.entity.Customer;
+import com.foodorder.entity.OrderItem;
 
 import java.time.LocalDateTime;
 import java.util.List;

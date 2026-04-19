@@ -3,7 +3,8 @@ package com.foodorder.service.impl;
 import com.foodorder.decorator.BaseDish;
 import com.foodorder.decorator.IDish;
 import com.foodorder.decorator.Topping;
-import com.foodorder.model.OrderItem;
+import com.foodorder.entity.Dish;
+import com.foodorder.entity.OrderItem;
 import com.foodorder.service.CartService;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +14,7 @@ import java.util.List;
 public class CartServiceImpl implements CartService {
 
     @Override
-    public IDish createDishWithToppings(String baseDishStr, List<String> toppings, String imageUrl) {
+    public Dish createDishWithToppings(String baseDishStr, List<String> toppings, String imageUrl) {
         String[] dishParts = baseDishStr.split("_");
         String dishName = dishParts[0];
         double dishPrice = Double.parseDouble(dishParts[1]);
@@ -31,11 +32,17 @@ public class CartServiceImpl implements CartService {
             }
         }
 
-        return finalDish;
+        return Dish.builder()
+                .setDishId("D-" + System.currentTimeMillis())
+                .setName(finalDish.getName())
+                .setPrice(finalDish.getPrice())
+                .setImageUrl(imageUrl)
+                .setDescription("")
+                .build();
     }
 
     @Override
-    public void addItemToCart(List<OrderItem> cart, IDish dish, int quantity) {
+    public void addItemToCart(List<OrderItem> cart, Dish dish, int quantity) {
         // Gộp nhóm: nếu đã có món cùng tên + giá → tăng quantity
         for (OrderItem item : cart) {
             if (item.getDish().getName().equals(dish.getName())
@@ -46,13 +53,10 @@ public class CartServiceImpl implements CartService {
         }
 
         // Chưa có → tạo OrderItem mới
-        OrderItem newItem = new OrderItem(
-                "OI-" + System.currentTimeMillis(),
-                null,
-                dish,
-                quantity,
-                dish.getPrice()
-        );
+        OrderItem newItem = new OrderItem();
+        newItem.setOrderItemId("OI-" + System.currentTimeMillis());
+        newItem.setDish(dish);
+        newItem.setQuantity(quantity);
         cart.add(newItem);
     }
 

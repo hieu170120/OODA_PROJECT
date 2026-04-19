@@ -3,7 +3,7 @@ package com.foodorder.controller;
 import com.foodorder.dto.DishResponseDTO;
 import com.foodorder.dto.CustomerDTO;
 import com.foodorder.entity.Dish;
-import com.foodorder.model.OrderItem;
+import com.foodorder.entity.OrderItem;
 import com.foodorder.service.CartService;
 import com.foodorder.service.DishService;
 import jakarta.servlet.http.HttpSession;

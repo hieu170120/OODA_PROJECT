@@ -1,6 +1,6 @@
 package com.foodorder.state.order;
 
-import com.foodorder.model.enums.OrderStatus;
+import com.foodorder.enums.OrderStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -9,12 +9,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static com.foodorder.model.enums.OrderStatus.CANCELLED;
-import static com.foodorder.model.enums.OrderStatus.DELIVERY;
-import static com.foodorder.model.enums.OrderStatus.FINISHED;
-import static com.foodorder.model.enums.OrderStatus.PREPARING;
-import static com.foodorder.model.enums.OrderStatus.READY_FOR_PICKUP;
-import static com.foodorder.model.enums.OrderStatus.RECEIVED;
+import static com.foodorder.enums.OrderStatus.CANCELLED;
+import static com.foodorder.enums.OrderStatus.DELIVERY;
+import static com.foodorder.enums.OrderStatus.FINISHED;
+import static com.foodorder.enums.OrderStatus.PREPARING;
+import static com.foodorder.enums.OrderStatus.READY_FOR_PICKUP;
+import static com.foodorder.enums.OrderStatus.RECEIVED;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.params.provider.Arguments.arguments;

@@ -1,6 +1,6 @@
 package com.foodorder.state.order;
 
-import com.foodorder.model.enums.OrderStatus;
+import com.foodorder.enums.OrderStatus;
 
 import java.util.LinkedHashSet;
 import java.util.Set;

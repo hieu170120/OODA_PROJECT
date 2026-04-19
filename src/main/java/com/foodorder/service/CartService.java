@@ -1,15 +1,15 @@
 package com.foodorder.service;
 
-import com.foodorder.decorator.IDish;
-import com.foodorder.model.OrderItem;
+import com.foodorder.entity.Dish;
+import com.foodorder.entity.OrderItem;
 
 import java.util.List;
 
 public interface CartService {
 
-    IDish createDishWithToppings(String baseDishStr, List<String> toppings, String imageUrl);
+    Dish createDishWithToppings(String baseDishStr, List<String> toppings, String imageUrl);
 
-    void addItemToCart(List<OrderItem> cart, IDish dish, int quantity);
+    void addItemToCart(List<OrderItem> cart, Dish dish, int quantity);
 
     boolean removeItem(List<OrderItem> cart, String orderItemId);
 

@@ -1,13 +1,13 @@
 package com.foodorder.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 @Entity
 @Table(name = "staffs")
-@Data
-@EqualsAndHashCode(callSuper = true)
-@PrimaryKeyJoinColumn(name = "id")
+@PrimaryKeyJoinColumn(name = "staff_id")
 public class Staff extends User {
 
+
+    public Staff() {
+    }
 }

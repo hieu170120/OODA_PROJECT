@@ -4,12 +4,11 @@ import com.foodorder.command.CommandManager;
 import com.foodorder.dto.DishRequestDTO;
 import com.foodorder.dto.DishResponseDTO;
 import com.foodorder.dto.OrderResponseDTO;
-import com.foodorder.model.Order;
-import com.foodorder.model.enums.OrderStatus;
+import com.foodorder.entity.Order;
+import com.foodorder.enums.OrderStatus;
 import com.foodorder.service.DishService;
 import com.foodorder.service.OrderService;
 import jakarta.servlet.http.HttpSession;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,12 +25,17 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin")
-@RequiredArgsConstructor
 public class AdminDishController {
 
     private final DishService dishService;
     private final CommandManager commandManager;
     private final OrderService orderService;
+
+    public AdminDishController(DishService dishService, CommandManager commandManager, OrderService orderService) {
+        this.dishService = dishService;
+        this.commandManager = commandManager;
+        this.orderService = orderService;
+    }
 
     @GetMapping("/dashboard")
     public String showDashboard(Model model, HttpSession session) {
@@ -134,7 +138,7 @@ public class AdminDishController {
         }
 
         List<OrderResponseDTO> orderDTOs = orderService.getAllOrders().stream()
-                .map(OrderResponseDTO::fromDomain)
+                .map(OrderResponseDTO::fromEntity)
                 .collect(Collectors.toList());
 
         model.addAttribute("orders", orderDTOs);

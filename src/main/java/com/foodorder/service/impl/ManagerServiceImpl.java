@@ -3,11 +3,11 @@ package com.foodorder.service.impl;
 import com.foodorder.entity.Manager;
 import com.foodorder.repository.ManagerRepository;
 import com.foodorder.service.ManagerService;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
+
 public class ManagerServiceImpl implements ManagerService {
 
     private final ManagerRepository managerRepository;
@@ -19,5 +19,9 @@ public class ManagerServiceImpl implements ManagerService {
             return manager;
         }
         return null;
+    }
+
+    public ManagerServiceImpl(ManagerRepository managerRepository) {
+        this.managerRepository = managerRepository;
     }
 }

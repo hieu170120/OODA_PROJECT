@@ -1,6 +1,6 @@
 package com.foodorder.state.order;
 
-import com.foodorder.model.enums.OrderStatus;
+import com.foodorder.enums.OrderStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

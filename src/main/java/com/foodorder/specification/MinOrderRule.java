@@ -1,6 +1,6 @@
 package com.foodorder.specification;
 
-import com.foodorder.model.Order;
+import com.foodorder.entity.Order;
 
 public class MinOrderRule implements EligibilityRule {
     private double minOrderValue;
@@ -18,7 +18,7 @@ public class MinOrderRule implements EligibilityRule {
             return false;
         }
 
-        return order.calculateSubtotalAmount() >= minOrderValue;
+        return order.calculateSubTotal() >= minOrderValue;
     }
 
     public double getMinOrderValue() {

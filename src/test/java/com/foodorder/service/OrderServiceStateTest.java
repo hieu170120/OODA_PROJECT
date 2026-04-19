@@ -1,7 +1,7 @@
 package com.foodorder.service;
 
 import com.foodorder.entity.OrderRecordEntity;
-import com.foodorder.model.enums.OrderStatus;
+import com.foodorder.enums.OrderStatus;
 import com.foodorder.repository.OrderJpaRepository;
 import com.foodorder.state.order.CancelledState;
 import com.foodorder.state.order.DeliveryState;

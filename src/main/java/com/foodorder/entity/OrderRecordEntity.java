@@ -1,8 +1,8 @@
 package com.foodorder.entity;
 
-import com.foodorder.model.enums.OrderStatus;
-import com.foodorder.model.enums.PaymentMethod;
-import com.foodorder.model.enums.PaymentStatus;
+import com.foodorder.enums.OrderStatus;
+import com.foodorder.enums.PaymentMethod;
+import com.foodorder.enums.PaymentStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

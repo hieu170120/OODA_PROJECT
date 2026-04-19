@@ -3,9 +3,6 @@ package com.foodorder.command;
 import com.foodorder.entity.Dish;
 import com.foodorder.repository.DishRepository;
 
-import lombok.AllArgsConstructor;
-
-@AllArgsConstructor
 public class DeleteDishCommand implements ICommand {
     private final DishRepository repository;
     private final Dish dish;
@@ -21,5 +18,10 @@ public class DeleteDishCommand implements ICommand {
         System.out.println("Restoring dish: " + dish.getName());
         dish.setDishId(null);
         repository.save(dish);
+    }
+
+    public DeleteDishCommand(DishRepository repository, Dish dish) {
+        this.repository = repository;
+        this.dish = dish;
     }
 }

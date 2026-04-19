@@ -221,29 +221,17 @@
                 <thead>
                     <tr>
                         <th width="12%">Mã Đơn</th>
-                        <th width="18%">Khách Hàng</th>
-                        <th width="25%">Địa Chỉ</th>
+                        <th width="15%">Khách Hàng</th>
+                        <th width="18%">Địa Chỉ</th>
+                        <th width="14%">Thời gian</th>
                         <th width="12%">Tổng Tiền</th>
-                        <th width="12%">Thanh Toán</th>
-                        <th width="15%">Trạng Thái</th>
+                        <th width="10%">Thanh Toán</th>
+                        <th width="13%">Trạng Thái</th>
                         <th width="6%" class="text-center">Lưu</th>
                     </tr>
                 </thead>
                 <tbody>
                     <c:forEach items="${orders}" var="order">
-                        <tr>
-                            <th width="12%">Ma Don</th>
-                            <th width="15%">Khach Hang</th>
-                            <th width="18%">Dia Chi</th>
-                            <th width="14%">Thoi gian</th>
-                            <th width="12%">Tong Tien</th>
-                            <th width="10%">Thanh Toan</th>
-                            <th width="13%">Trang Thai</th>
-                            <th width="6%" class="text-center">Luu</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <c:forEach items="${orders}" var="order">
                             <tr>
                                 <td>
                                     <code style="background-color: #f3f4f6; padding: 4px 8px; border-radius: 4px;">
