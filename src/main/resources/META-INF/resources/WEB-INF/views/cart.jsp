@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -205,7 +206,16 @@
                             <label for="custName">Tên người nhận</label>
                         </div>
                         <div class="form-floating mb-4">
-                            <textarea class="form-control" id="custAddress" name="address" style="height: 80px" required placeholder="Địa chỉ"></textarea>
+                            <select class="form-select mb-3" id="addressSelect" name="selectedAddressId">
+                                <option value="">-- Chọn địa chỉ đã lưu (nếu có) --</option>
+                                <c:forEach items="${addressOptions}" var="addr">
+                                    <option value="${addr.id}" data-full-address="${fn:escapeXml(addr.fullAddress)}"
+                                        ${selectedAddressId == addr.id ? 'selected' : ''}>
+                                        ${addr.fullAddress}
+                                    </option>
+                                </c:forEach>
+                            </select>
+                            <textarea class="form-control" id="custAddress" name="address" style="height: 80px" required placeholder="Địa chỉ">${enteredAddress}</textarea>
                             <label for="custAddress">Địa chỉ giao hàng chi tiết</label>
                         </div>
 
@@ -451,6 +461,25 @@
         couponCodeInput.addEventListener('input', function () {
             refreshPaymentSummary(currentCartTotal);
         });
+    }
+
+    const addressSelect = document.getElementById('addressSelect');
+    const addressTextArea = document.getElementById('custAddress');
+    if (addressSelect && addressTextArea) {
+        addressSelect.addEventListener('change', function () {
+            const selectedOption = addressSelect.options[addressSelect.selectedIndex];
+            if (!selectedOption || !selectedOption.value) {
+                return;
+            }
+            const selectedAddress = selectedOption.getAttribute('data-full-address') || '';
+            addressTextArea.value = selectedAddress;
+        });
+
+        if (addressSelect.value && !addressTextArea.value.trim()) {
+            const selectedOption = addressSelect.options[addressSelect.selectedIndex];
+            const selectedAddress = selectedOption ? (selectedOption.getAttribute('data-full-address') || '') : '';
+            addressTextArea.value = selectedAddress;
+        }
     }
 
     refreshPaymentSummary(currentCartTotal);

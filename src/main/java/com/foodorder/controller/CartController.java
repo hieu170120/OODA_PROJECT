@@ -11,6 +11,7 @@ import com.foodorder.entity.OrderItem;
 import com.foodorder.service.CartService;
 import com.foodorder.service.CouponService;
 import com.foodorder.service.OrderService;
+import com.foodorder.service.AddressService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -33,12 +34,15 @@ public class CartController {
     private final CartService cartService;
     private final OrderService orderService;
     private final CouponService couponService;
+    private final AddressService addressService;
 
     @Autowired
-    public CartController(CartService cartService, OrderService orderService, CouponService couponService) {
+    public CartController(CartService cartService, OrderService orderService, CouponService couponService,
+                          AddressService addressService) {
         this.cartService = cartService;
         this.orderService = orderService;
         this.couponService = couponService;
+        this.addressService = addressService;
     }
 
     @SuppressWarnings("unchecked")
@@ -76,6 +80,9 @@ public class CartController {
         model.addAttribute("cartCount", cartService.calculateCount(cart));
         model.addAttribute("couponOptions", couponService.getCouponOptions(buildPreviewOrder(cart)));
         model.addAttribute("enteredCouponCode", "");
+        model.addAttribute("addressOptions", addressService.getAddressOptions(loggedInUser.getUserId()));
+        model.addAttribute("selectedAddressId", "");
+        model.addAttribute("enteredAddress", "");
         return "cart";
     }
 
@@ -148,6 +155,7 @@ public class CartController {
 
     @PostMapping("/cart/checkout")
     public String processCheckout(@RequestParam(value = "customerName", required = false) String customerName,
+                                  @RequestParam(value = "selectedAddressId", required = false) String selectedAddressId,
                                   @RequestParam("address") String address,
                                   @RequestParam(value = "couponCode", required = false) String couponCode,
                                   @RequestParam(value = "paymentMethod", defaultValue = "COD") String paymentMethod,
@@ -167,20 +175,31 @@ public class CartController {
         customer.setUserId(loggedInUser.getUserId() != null ? loggedInUser.getUserId() : "CUST-" + System.currentTimeMillis());
         customer.setFullName((customerName != null && !customerName.isBlank()) ? customerName : loggedInUser.getFullName());
 
+        String resolvedAddress;
+        try {
+            resolvedAddress = addressService.resolveCheckoutAddress(customer.getUserId(), selectedAddressId, address);
+        } catch (IllegalArgumentException ex) {
+            repopulateCart(model, loggedInUser, cart, buildPreviewOrder(cart), couponCode, selectedAddressId,
+                    address, ex.getMessage());
+            return "cart";
+        }
+
         Order previewOrder = buildPreviewOrder(cart);
         Coupon coupon;
         try {
             coupon = couponService.resolveCoupon(couponCode, previewOrder);
         } catch (IllegalArgumentException ex) {
-            repopulateCart(model, loggedInUser, cart, previewOrder, couponCode, ex.getMessage());
+            repopulateCart(model, loggedInUser, cart, previewOrder, couponCode, selectedAddressId,
+                    address, ex.getMessage());
             return "cart";
         }
 
         Order completedOrder;
         try {
-            completedOrder = orderService.createDeliveryOrder(customer, cart, address, coupon, paymentMethod);
+            completedOrder = orderService.createDeliveryOrder(customer, cart, resolvedAddress, coupon, paymentMethod);
         } catch (IllegalArgumentException ex) {
-            repopulateCart(model, loggedInUser, cart, previewOrder, couponCode, ex.getMessage());
+            repopulateCart(model, loggedInUser, cart, previewOrder, couponCode, selectedAddressId,
+                    address, ex.getMessage());
             return "cart";
         }
 
@@ -191,7 +210,8 @@ public class CartController {
     }
 
     private void repopulateCart(Model model, CustomerDTO loggedInUser, List<OrderItem> cart,
-                                Order previewOrder, String couponCode, String errorMessage) {
+                                Order previewOrder, String couponCode, String selectedAddressId,
+                                String enteredAddress, String errorMessage) {
         List<CartItemDTO> cartItemDTOs = cart.stream().map(CartItemDTO::fromEntity).collect(Collectors.toList());
         model.addAttribute("user", loggedInUser);
         model.addAttribute("cartItems", cartItemDTOs);
@@ -199,6 +219,9 @@ public class CartController {
         model.addAttribute("cartCount", cartService.calculateCount(cart));
         model.addAttribute("couponOptions", couponService.getCouponOptions(previewOrder));
         model.addAttribute("enteredCouponCode", couponCode);
+        model.addAttribute("addressOptions", addressService.getAddressOptions(loggedInUser.getUserId()));
+        model.addAttribute("selectedAddressId", selectedAddressId != null ? selectedAddressId : "");
+        model.addAttribute("enteredAddress", enteredAddress != null ? enteredAddress : "");
         model.addAttribute("checkoutError", errorMessage);
     }
 }

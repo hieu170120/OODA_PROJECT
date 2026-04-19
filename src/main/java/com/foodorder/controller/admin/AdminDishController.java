@@ -6,6 +6,7 @@ import com.foodorder.dto.DishResponseDTO;
 import com.foodorder.dto.OrderResponseDTO;
 import com.foodorder.entity.Order;
 import com.foodorder.enums.OrderStatus;
+import com.foodorder.service.CouponService;
 import com.foodorder.service.DishService;
 import com.foodorder.service.OrderService;
 import jakarta.servlet.http.HttpSession;
@@ -30,11 +31,14 @@ public class AdminDishController {
     private final DishService dishService;
     private final CommandManager commandManager;
     private final OrderService orderService;
+    private final CouponService couponService;
 
-    public AdminDishController(DishService dishService, CommandManager commandManager, OrderService orderService) {
+    public AdminDishController(DishService dishService, CommandManager commandManager, OrderService orderService,
+                               CouponService couponService) {
         this.dishService = dishService;
         this.commandManager = commandManager;
         this.orderService = orderService;
+        this.couponService = couponService;
     }
 
     @GetMapping("/dashboard")
@@ -45,6 +49,7 @@ public class AdminDishController {
 
         long totalDishes = dishService.getAllDishes().size();
         long totalOrders = orderService.getAllOrders().size();
+        long totalCoupons = couponService.getAllCoupons().size();
         long ordersToday = 0;
         double revenueToday = 0.0;
         LocalDate today = LocalDate.now();
@@ -58,6 +63,7 @@ public class AdminDishController {
 
         model.addAttribute("totalDishes", totalDishes);
         model.addAttribute("totalOrders", totalOrders);
+        model.addAttribute("totalCoupons", totalCoupons);
         model.addAttribute("ordersToday", ordersToday);
         model.addAttribute("revenueToday", String.format("%.0fd", revenueToday));
         return "admin/dashboard";

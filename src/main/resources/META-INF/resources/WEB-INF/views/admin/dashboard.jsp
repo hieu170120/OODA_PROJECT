@@ -29,6 +29,11 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a href="${pageContext.request.contextPath}/admin/coupons" class="nav-link">
+                            <i class="fa-solid fa-ticket"></i> Coupon
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="${pageContext.request.contextPath}/admin/orders" class="nav-link">
                             <i class="fa-solid fa-receipt"></i> Đơn hàng
                         </a>
@@ -142,6 +147,25 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="col-md-3">
+                            <div
+                                style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
+                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                    <div>
+                                        <div
+                                            style="font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">
+                                            Coupon</div>
+                                        <div
+                                            style="font-size: 28px; font-weight: 700; color: #1f2937; margin-top: 8px;">
+                                            ${totalCoupons}</div>
+                                    </div>
+                                    <div style="font-size: 32px; color: #8b5cf6; opacity: 0.2;">
+                                        <i class="fa-solid fa-ticket"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="table-card">
@@ -157,6 +181,18 @@
                                         <i class="fa-solid fa-burger"></i>
                                     </div>
                                     <div style="font-weight: 600; color: #1f2937;">Quản lý Món Ăn</div>
+                                </div>
+                            </a>
+
+                            <a href="${pageContext.request.contextPath}/admin/coupons"
+                                style="text-decoration: none; color: inherit;">
+                                <div style="padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px; text-align: center; transition: all 0.3s; cursor: pointer;"
+                                    onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'; this.style.borderColor='#000000';"
+                                    onmouseout="this.style.boxShadow='none'; this.style.borderColor='#e5e7eb';">
+                                    <div style="font-size: 28px; margin-bottom: 10px; color: #8b5cf6;">
+                                        <i class="fa-solid fa-ticket"></i>
+                                    </div>
+                                    <div style="font-weight: 600; color: #1f2937;">Quản lý Coupon</div>
                                 </div>
                             </a>
 

@@ -170,6 +170,11 @@
                     <i class="fa-solid fa-burger"></i> Món ăn
                 </a>
             </li>
+                <li class="nav-item">
+                    <a href="${pageContext.request.contextPath}/admin/coupons" class="nav-link">
+                        <i class="fa-solid fa-ticket"></i> Coupon
+                    </a>
+                </li>
             <li class="nav-item">
                 <a href="${pageContext.request.contextPath}/admin/orders" class="nav-link active">
                     <i class="fa-solid fa-receipt"></i> Đơn hàng
