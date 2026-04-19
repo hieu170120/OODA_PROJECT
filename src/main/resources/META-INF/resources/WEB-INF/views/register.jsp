@@ -183,25 +183,16 @@
                     if (password !== confirmPassword) {
                         e.preventDefault();
                         alert('Mật khẩu không khớp. Vui lòng kiểm tra lại.');
-                        <script>
-    // Validate password match
-                            document.querySelector('form').addEventListener('submit', function(e) {
-        const password = document.getElementById('password').value;
-                            const confirmPassword = document.getElementById('confirmPassword').value;
+                        document.getElementById('confirmPassword').focus();
+                        return;
+                    }
 
-                            if (password !== confirmPassword) {
-                                e.preventDefault();
-                            alert('Mật khẩu không khớp. Vui lòng kiểm tra lại.');
-                            document.getElementById('confirmPassword').focus();
-                            return;
-        }
-
-                            if (password.length < 6) {
-                                e.preventDefault();
-                            alert('Mật khẩu phải có ít nhất 6 ký tự.');
-                            document.getElementById('password').focus();
-                            return;
-        }
-    });
+                    if (password.length < 6) {
+                        e.preventDefault();
+                        alert('Mật khẩu phải có ít nhất 6 ký tự.');
+                        document.getElementById('password').focus();
+                        return;
+                    }
+                });
             </script>
         </body>

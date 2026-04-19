@@ -15,8 +15,6 @@ public class ManagerServiceImpl implements ManagerService {
     @Override
     public Manager authenticate(String email, String password) {
         Manager manager = managerRepository.findByEmail(email).orElse(null);
-        // Note: Trong dự án thực tế, nên dùng password hashing (e.g., BCrypt)
-        // Đây chỉ dùng plain text để đơn giản theo setup hiện tại
         if (manager != null && manager.getPassword().equals(password)) {
             return manager;
         }

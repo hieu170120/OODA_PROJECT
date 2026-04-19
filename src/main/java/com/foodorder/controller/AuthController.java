@@ -1,8 +1,8 @@
 package com.foodorder.controller;
 
-import com.foodorder.dto.UserDTO;
-import com.foodorder.entity.User;
-import com.foodorder.service.UserService;
+import com.foodorder.dto.CustomerDTO;
+import com.foodorder.entity.Customer;
+import com.foodorder.service.CustomerService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UserService userService;
+    private final CustomerService customerService;
 
     @GetMapping("/login")
     public String showLoginPage() {
@@ -27,11 +27,11 @@ public class AuthController {
                                @RequestParam("password") String password,
                                HttpSession session,
                                Model model) {
-        User user = userService.authenticate(email, password);
-        if (user != null) {
-            // Chuyển Entity User thành DTO, tránh lưu Entity (chứa Password, db properties) lên session
-            UserDTO userDTO = UserDTO.fromEntity(user);
-            session.setAttribute("LOGGED_IN_USER", userDTO);
+        Customer customer = customerService.authenticate(email, password);
+        if (customer != null) {
+            // Chuyển Entity Customer thành DTO, tránh lưu Entity (chứa Password, db properties) lên session
+            CustomerDTO customerDTO = CustomerDTO.fromEntity(customer);
+            session.setAttribute("LOGGED_IN_USER", customerDTO);
             return "redirect:/menu";
         } else {
             model.addAttribute("loginError", "Email hoặc mật khẩu không đúng.");
@@ -79,15 +79,15 @@ public class AuthController {
                 return "register";
             }
 
-            // Create new user
-            User newUser = new User();
-            newUser.setFullName(firstName + " " + lastName);
-            newUser.setEmail(email);
-            newUser.setPhone(phone);
-            newUser.setPassword(password);
+            // Create new customer
+            Customer newCustomer = new Customer();
+            newCustomer.setFullName(firstName + " " + lastName);
+            newCustomer.setEmail(email);
+            newCustomer.setPhone(phone);
+            newCustomer.setPassword(password);
 
-            // Register user
-            userService.register(newUser);
+            // Register customer
+            customerService.register(newCustomer);
 
             return "redirect:/login?success=true";
         } catch (IllegalArgumentException e) {

@@ -1,7 +1,7 @@
 package com.foodorder.controller;
 
 import com.foodorder.dto.DishResponseDTO;
-import com.foodorder.dto.UserDTO;
+import com.foodorder.dto.CustomerDTO;
 import com.foodorder.entity.Dish;
 import com.foodorder.model.OrderItem;
 import com.foodorder.service.CartService;
@@ -30,7 +30,7 @@ public class MenuController {
 
     @GetMapping("/menu")
     public String showMenuPage(Model model, HttpSession session) {
-        UserDTO loggedInUser = (UserDTO) session.getAttribute("LOGGED_IN_USER");
+        CustomerDTO loggedInUser = (CustomerDTO) session.getAttribute("LOGGED_IN_USER");
         if (loggedInUser == null) {
             return "redirect:/login";
         }

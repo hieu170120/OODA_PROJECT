@@ -3,7 +3,7 @@ package com.foodorder.controller;
 import com.foodorder.decorator.IDish;
 import com.foodorder.dto.CartItemDTO;
 import com.foodorder.dto.OrderResponseDTO;
-import com.foodorder.dto.UserDTO;
+import com.foodorder.dto.CustomerDTO;
 import com.foodorder.model.Coupon;
 import com.foodorder.model.Customer;
 import com.foodorder.model.Order;
@@ -70,7 +70,7 @@ public class CartController {
 
     @GetMapping("/cart")
     public String showCartPage(Model model, HttpSession session) {
-        UserDTO loggedInUser = (UserDTO) session.getAttribute("LOGGED_IN_USER");
+        CustomerDTO loggedInUser = (CustomerDTO) session.getAttribute("LOGGED_IN_USER");
         if (loggedInUser == null) {
             return "redirect:/login";
         }
@@ -104,7 +104,7 @@ public class CartController {
             @RequestParam(value = "imageUrl", defaultValue = "") String imageUrl,
             HttpSession session
     ) {
-        UserDTO loggedInUser = (UserDTO) session.getAttribute("LOGGED_IN_USER");
+        CustomerDTO loggedInUser = (CustomerDTO) session.getAttribute("LOGGED_IN_USER");
         if (loggedInUser == null) {
             return ResponseEntity.status(401).body(Map.of("error", "Chưa đăng nhập"));
         }
@@ -124,7 +124,7 @@ public class CartController {
     // ==========================================
     @PostMapping("/cart/remove-item")
     public String removeItemFromCart(@RequestParam("orderItemId") String orderItemId, HttpSession session) {
-        UserDTO loggedInUser = (UserDTO) session.getAttribute("LOGGED_IN_USER");
+        CustomerDTO loggedInUser = (CustomerDTO) session.getAttribute("LOGGED_IN_USER");
         if (loggedInUser == null) {
             return "redirect:/login";
         }
@@ -144,7 +144,7 @@ public class CartController {
             @RequestParam("action") String action,
             HttpSession session
     ) {
-        UserDTO loggedInUser = (UserDTO) session.getAttribute("LOGGED_IN_USER");
+        CustomerDTO loggedInUser = (CustomerDTO) session.getAttribute("LOGGED_IN_USER");
         if (loggedInUser == null) {
             return ResponseEntity.status(401).body(Map.of("error", "Chưa đăng nhập"));
         }
@@ -191,7 +191,7 @@ public class CartController {
             Model model,
             HttpSession session
     ) {
-        UserDTO loggedInUser = (UserDTO) session.getAttribute("LOGGED_IN_USER");
+        CustomerDTO loggedInUser = (CustomerDTO) session.getAttribute("LOGGED_IN_USER");
         if (loggedInUser == null) {
             return "redirect:/login";
         }

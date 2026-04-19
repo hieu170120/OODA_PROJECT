@@ -10,7 +10,7 @@ public class AddDishCommand implements ICommand {
     private final DishRepository repository;
     private final Dish dish;
 
-    @Override   
+    @Override
     public void execute() {
         System.out.println("Adding dish: " + dish.getName());
         dish.setDishId(null);
