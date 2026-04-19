@@ -124,16 +124,19 @@ public class OrderService {
     }
 
     private Payment attachPayment(Order order, PaymentMethod paymentMethod, Coupon coupon) {
-        Payment payment = order.createPayment();
-        payment.setPaymentId("PAY-" + UUID.randomUUID().toString().substring(0, 8));
+        Payment payment = new Payment();
+        payment.setPaymentDate(LocalDateTime.now());
         payment.setPaymentMethod(paymentMethod);
+        payment.setPaymentStatus(PaymentStatus.PENDING);
+        payment.setPaymentId("PAY-" + UUID.randomUUID().toString().substring(0, 8));
 
         double amount = order.calculateSubTotal();
         if (coupon != null) {
             amount = Math.max(0.0, amount - coupon.calculateDiscount(order));
         }
         payment.setAmount(amount);
-        payment.setPaymentStatus(PaymentStatus.PENDING);
+        
+        order.setPaymentId(payment.getPaymentId());
         return payment;
     }
 
@@ -210,14 +213,7 @@ public class OrderService {
         customer.setFullName(record.getCustomerName());
         order.setCustomer(customer);
 
-        Payment payment = new Payment();
-        payment.setPaymentId(record.getPaymentId());
-        payment.setPaymentMethod(record.getPaymentMethod() != null ? record.getPaymentMethod() : PaymentMethod.COD);
-        payment.setPaymentStatus(record.getPaymentStatus());
-        payment.setPaidAt(record.getPaidAt());
-        payment.setAmount(record.getTotalAmount());
-        payment.setOrder(order);
-        order.setPayment(payment);
+        order.setPaymentId(record.getPaymentId());
         return order;
     }
 }

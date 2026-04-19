@@ -13,10 +13,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-
+import jakarta.persistence.Transient;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -47,9 +45,8 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "payment_id")
-    private Payment payment;
+    @Column(name = "payment_id", length = 64)
+    private String paymentId;
 
     public void applyCoupon(Coupon coupon) {
         if (coupon == null) {
@@ -59,17 +56,6 @@ public class Order {
 
     public void updateStatus(OrderStatus newStatus) {
         this.orderStatus = newStatus;
-    }
-
-    public Payment createPayment() {
-        Payment payment = new Payment();
-        payment.setAmount(calculateSubTotal(0.0));
-        payment.setPaymentDate(LocalDateTime.now());
-        payment.setPaymentMethod(PaymentMethod.COD);
-        payment.setPaymentStatus(PaymentStatus.PENDING);
-        payment.setOrder(this);
-        this.payment = payment;
-        return payment;
     }
 
     public double calculateSubTotal(double price) {
@@ -87,9 +73,6 @@ public class Order {
     }
 
     public double calculateTotal() {
-        if (payment != null && payment.getAmount() > 0) {
-            return payment.getAmount();
-        }
         return calculateSubTotal();
     }
 
@@ -152,11 +135,11 @@ public class Order {
         this.orderStatus = orderStatus;
     }
 
-    public Payment getPayment() {
-        return payment;
+    public String getPaymentId() {
+        return paymentId;
     }
 
-    public void setPayment(Payment payment) {
-        this.payment = payment;
+    public void setPaymentId(String paymentId) {
+        this.paymentId = paymentId;
     }
 }

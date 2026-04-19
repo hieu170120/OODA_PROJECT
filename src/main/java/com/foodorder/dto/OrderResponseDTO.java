@@ -50,13 +50,7 @@ public class OrderResponseDTO {
                     .collect(Collectors.toList()));
         }
 
-        Payment payment = order.getPayment();
-        if (payment != null) {
-            dto.setPaymentMethod(payment.getPaymentMethod());
-            dto.setPaymentStatus(payment.getPaymentStatus());
-            dto.setPaidAt(payment.getPaidAt());
-            dto.setPaymentId(payment.getPaymentId());
-        }
+        dto.setPaymentId(order.getPaymentId());
 
         return dto;
     }

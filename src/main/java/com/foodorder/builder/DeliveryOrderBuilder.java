@@ -43,7 +43,7 @@ public class DeliveryOrderBuilder implements IOrderBuilder {
     @Override
     public void buildPayment(Payment payment) {
         if (payment != null) {
-            this.result.setPayment(payment);            
+            this.result.setPaymentId(payment.getPaymentId());            
         }
     }
 
