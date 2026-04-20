@@ -37,8 +37,8 @@ public class Payment {
     @Column(name = "payment_status", length = 32)
     private PaymentStatus paymentStatus;
 
-    @Transient
-    private Order order;
+    @Column(name = "order_id", length = 64)
+    private String orderId;
 
     public void processPayment() {
     }
@@ -102,11 +102,11 @@ public class Payment {
         this.paymentStatus = paymentStatus;
     }
 
-    public Order getOrder() {
-        return order;
+    public String getOrderId() {
+        return orderId;
     }
 
-    public void setOrder(Order order) {
-        this.order = order;
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 }

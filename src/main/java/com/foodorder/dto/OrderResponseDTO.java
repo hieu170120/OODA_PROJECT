@@ -1,6 +1,7 @@
 package com.foodorder.dto;
 
 import com.foodorder.entity.Order;
+import com.foodorder.entity.OrderRecordEntity;
 import com.foodorder.entity.Payment;
 import com.foodorder.enums.OrderStatus;
 import com.foodorder.enums.PaymentMethod;
@@ -37,9 +38,16 @@ public class OrderResponseDTO {
             dto.setCustomerName(order.getCustomer().getFullName());
         }
         dto.setOrderTime(order.getOrderTime());
-        dto.setSubTotal(order.calculateSubTotal());
-        dto.setShippingFee(0);
-        dto.setTotalAmount(order.calculateTotal());
+        
+        // Tính subTotal từ orderItems
+        double subTotal = order.calculateSubTotal();
+        dto.setSubTotal(subTotal);
+        
+        // ShippingFee cố định 15000
+        double shippingFee = 15000.0;
+        dto.setShippingFee(shippingFee);
+        dto.setTotalAmount(subTotal + shippingFee);
+        
         dto.setShippingAddress(null);
         dto.setEstimatedPickupTime(null);
         dto.setStatus(order.getStatus());
@@ -51,6 +59,29 @@ public class OrderResponseDTO {
         }
 
         dto.setPaymentId(order.getPaymentId());
+
+        return dto;
+    }
+
+    public static OrderResponseDTO fromRecord(OrderRecordEntity record) {
+        OrderResponseDTO dto = new OrderResponseDTO();
+        dto.setOrderId(record.getOrderId());
+        dto.setCustomerName(record.getCustomerName());
+        dto.setOrderTime(record.getOrderTime());
+        dto.setSubTotal(record.getSubTotal());
+        
+        // ShippingFee cố định 15000
+        double shippingFee = 15000.0;
+        dto.setShippingFee(shippingFee);
+        dto.setTotalAmount(record.getSubTotal() + shippingFee);
+        
+        dto.setShippingAddress(record.getShippingAddress());
+        dto.setEstimatedPickupTime(record.getEstimatedPickupTime());
+        dto.setStatus(record.getOrderStatus());
+        dto.setPaymentMethod(record.getPaymentMethod());
+        dto.setPaymentStatus(record.getPaymentStatus());
+        dto.setPaidAt(record.getPaidAt());
+        dto.setPaymentId(record.getPaymentId());
 
         return dto;
     }

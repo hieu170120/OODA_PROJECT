@@ -69,6 +69,10 @@ public class OrderService {
         return orders;
     }
 
+    public List<OrderRecordEntity> getAllOrderRecords() {
+        return orderRepository.findAllByOrderByOrderTimeDesc();
+    }
+
     public Order getOrderById(String orderId) {
         return mapToEntity(findRecordById(orderId));
     }
@@ -135,6 +139,7 @@ public class OrderService {
             amount = Math.max(0.0, amount - coupon.calculateDiscount(order));
         }
         payment.setAmount(amount);
+        payment.setOrderId(order.getOrderId());
         
         order.setPaymentId(payment.getPaymentId());
         return payment;

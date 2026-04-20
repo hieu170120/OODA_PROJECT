@@ -143,8 +143,8 @@ public class AdminDishController {
             return "redirect:/admin/login";
         }
 
-        List<OrderResponseDTO> orderDTOs = orderService.getAllOrders().stream()
-                .map(OrderResponseDTO::fromEntity)
+        List<OrderResponseDTO> orderDTOs = orderService.getAllOrderRecords().stream()
+                .map(OrderResponseDTO::fromRecord)
                 .collect(Collectors.toList());
 
         model.addAttribute("orders", orderDTOs);
