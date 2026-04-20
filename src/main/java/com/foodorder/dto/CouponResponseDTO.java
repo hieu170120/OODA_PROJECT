@@ -1,7 +1,6 @@
 package com.foodorder.dto;
 
 import com.foodorder.entity.Coupon;
-import com.foodorder.enums.DiscountType;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -10,8 +9,8 @@ public class CouponResponseDTO {
     private static final DateTimeFormatter INPUT_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
 
     private String couponCode;
-    private DiscountType discountType;
-    private String discountTypeName;
+    private String strategyType;
+    private String strategyLabel;
     private Double discountValue;
     private Double maxDiscount;
     private Double minOrderValue;
@@ -33,8 +32,8 @@ public class CouponResponseDTO {
 
         CouponResponseDTO dto = new CouponResponseDTO();
         dto.setCouponCode(coupon.getCouponCode());
-        dto.setDiscountType(coupon.getDiscountType());
-        dto.setDiscountTypeName(coupon.getDiscountType() != null ? coupon.getDiscountType().name() : "FIXED_AMOUNT");
+        dto.setStrategyType(coupon.isPercentageCoupon() ? "PERCENTAGE" : "FIXED_AMOUNT");
+        dto.setStrategyLabel(coupon.isPercentageCoupon() ? "Giảm theo %" : "Giảm tiền cố định");
         dto.setDiscountValue(coupon.getDiscountValue());
         dto.setMaxDiscount(coupon.getMaxDiscount());
         dto.setMinOrderValue(coupon.getMinOrderValue());
@@ -56,20 +55,20 @@ public class CouponResponseDTO {
         this.couponCode = couponCode;
     }
 
-    public DiscountType getDiscountType() {
-        return discountType;
+    public String getStrategyType() {
+        return strategyType;
     }
 
-    public void setDiscountType(DiscountType discountType) {
-        this.discountType = discountType;
+    public void setStrategyType(String strategyType) {
+        this.strategyType = strategyType;
     }
 
-    public String getDiscountTypeName() {
-        return discountTypeName;
+    public String getStrategyLabel() {
+        return strategyLabel;
     }
 
-    public void setDiscountTypeName(String discountTypeName) {
-        this.discountTypeName = discountTypeName;
+    public void setStrategyLabel(String strategyLabel) {
+        this.strategyLabel = strategyLabel;
     }
 
     public Double getDiscountValue() {

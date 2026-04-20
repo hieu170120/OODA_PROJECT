@@ -48,9 +48,9 @@ INSERT IGNORE INTO order_records (order_id, customer_name, shipping_address, sub
 
 -- ==========================================
 -- BẢNG: coupons (Mã giảm giá)
--- Các cột: id, discount_type, discount_value, max_discount, min_order_value, valid_from, valid_until
+-- Các cột: id, discount_value, max_discount, min_order_value, valid_from, valid_until
 -- ==========================================
-INSERT IGNORE INTO coupons (id, discount_type, discount_value, max_discount, min_order_value, valid_from, valid_until) VALUES
-('SAVE10', 'FIXED_AMOUNT', 10000.0, NULL, 50000.0, DATE_SUB(NOW(), INTERVAL 30 DAY), DATE_ADD(NOW(), INTERVAL 180 DAY)),
-('FREESHIP15', 'FIXED_AMOUNT', 15000.0, NULL, 30000.0, DATE_SUB(NOW(), INTERVAL 30 DAY), DATE_ADD(NOW(), INTERVAL 180 DAY)),
-('BIGSALE20', 'PERCENTAGE', 20.0, 50000.0, 200000.0, DATE_SUB(NOW(), INTERVAL 7 DAY), DATE_ADD(NOW(), INTERVAL 30 DAY));
+INSERT IGNORE INTO coupons (id, discount_value, max_discount, min_order_value, valid_from, valid_until) VALUES
+('SAVE10', 10000.0, NULL, 50000.0, DATE_SUB(NOW(), INTERVAL 30 DAY), DATE_ADD(NOW(), INTERVAL 180 DAY)),
+('FREESHIP15', 15000.0, NULL, 30000.0, DATE_SUB(NOW(), INTERVAL 30 DAY), DATE_ADD(NOW(), INTERVAL 180 DAY)),
+('BIGSALE20', 20.0, 50000.0, 200000.0, DATE_SUB(NOW(), INTERVAL 7 DAY), DATE_ADD(NOW(), INTERVAL 30 DAY));

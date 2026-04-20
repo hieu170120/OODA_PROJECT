@@ -94,7 +94,7 @@
                         <c:forEach items="${coupons}" var="coupon">
                             <tr>
                                 <td><strong>${coupon.couponCode}</strong></td>
-                                <td>${coupon.discountType}</td>
+                                <td>${coupon.strategyLabel}</td>
                                 <td>${coupon.discountDisplay}</td>
                                 <td>
                                     <fmt:formatNumber value="${coupon.minOrderValue}" type="number" groupingUsed="true" maxFractionDigits="0" /> đ
@@ -141,7 +141,7 @@
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label fw-semibold">Loại giảm giá</label>
-                                <select name="discountType" class="form-select" required>
+                                <select name="strategyType" class="form-select" required>
                                     <option value="FIXED_AMOUNT">Giảm tiền cố định</option>
                                     <option value="PERCENTAGE">Giảm theo %</option>
                                 </select>
@@ -194,9 +194,9 @@
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label fw-semibold">Loại giảm giá</label>
-                                    <select name="discountType" class="form-select" required>
-                                        <option value="FIXED_AMOUNT" ${coupon.discountTypeName == 'FIXED_AMOUNT' ? 'selected' : ''}>Giảm tiền cố định</option>
-                                        <option value="PERCENTAGE" ${coupon.discountTypeName == 'PERCENTAGE' ? 'selected' : ''}>Giảm theo %</option>
+                                    <select name="strategyType" class="form-select" required>
+                                        <option value="FIXED_AMOUNT" ${coupon.strategyType == 'FIXED_AMOUNT' ? 'selected' : ''}>Giảm tiền cố định</option>
+                                        <option value="PERCENTAGE" ${coupon.strategyType == 'PERCENTAGE' ? 'selected' : ''}>Giảm theo %</option>
                                     </select>
                                 </div>
                                 <div class="col-md-4">

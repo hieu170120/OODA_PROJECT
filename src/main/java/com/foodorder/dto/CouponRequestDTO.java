@@ -1,14 +1,13 @@
 package com.foodorder.dto;
 
 import com.foodorder.entity.Coupon;
-import com.foodorder.enums.DiscountType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
 public class CouponRequestDTO {
     private String couponCode;
-    private DiscountType discountType;
+    private String strategyType;
     private Double discountValue;
     private Double maxDiscount;
     private Double minOrderValue;
@@ -25,9 +24,10 @@ public class CouponRequestDTO {
     public Coupon toEntity() {
         Coupon coupon = new Coupon();
         coupon.setId(couponCode != null ? couponCode.trim().toUpperCase() : null);
-        coupon.setDiscountType(discountType);
+
+        boolean isPercentage = "PERCENTAGE".equalsIgnoreCase(strategyType);
         coupon.setDiscountValue(discountValue);
-        coupon.setMaxDiscount(maxDiscount);
+        coupon.setMaxDiscount(isPercentage ? (maxDiscount != null ? maxDiscount : 0.0) : null);
         coupon.setMinOrderValue(minOrderValue);
         coupon.setValidFrom(validFrom);
         coupon.setValidUntil(validUntil);
@@ -42,12 +42,12 @@ public class CouponRequestDTO {
         this.couponCode = couponCode;
     }
 
-    public DiscountType getDiscountType() {
-        return discountType;
+    public String getStrategyType() {
+        return strategyType;
     }
 
-    public void setDiscountType(DiscountType discountType) {
-        this.discountType = discountType;
+    public void setStrategyType(String strategyType) {
+        this.strategyType = strategyType;
     }
 
     public Double getDiscountValue() {

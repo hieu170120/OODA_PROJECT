@@ -1,6 +1,5 @@
 package com.foodorder.entity;
 
-import com.foodorder.enums.DiscountType;
 import com.foodorder.specification.CompositeEligibilityRule;
 import com.foodorder.specification.DateRangeRule;
 import com.foodorder.specification.MinOrderRule;
@@ -8,8 +7,6 @@ import com.foodorder.strategy.coupon.FixedAmountDiscountStrategy;
 import com.foodorder.strategy.coupon.PercentageDiscountStrategy;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -28,10 +25,6 @@ public class Coupon {
     @Id
     @Column(name = "id", length = 64)
     private String id;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "discount_type", nullable = false, length = 32)
-    private DiscountType discountType;
 
     @Column(name = "discount_value", nullable = false)
     private Double discountValue;
@@ -88,7 +81,7 @@ public class Coupon {
         }
 
         double subtotal = order.calculateSubTotal();
-        if (discountType == DiscountType.PERCENTAGE) {
+        if (isPercentageCoupon()) {
             double discount = subtotal * (discountValue / 100.0);
             if (maxDiscount != null && maxDiscount > 0 && discount > maxDiscount) {
                 discount = maxDiscount;
@@ -111,7 +104,7 @@ public class Coupon {
     }
 
     public String getDiscountDescription() {
-        if (discountType == DiscountType.PERCENTAGE) {
+        if (isPercentageCoupon()) {
             String cap = maxDiscount != null && maxDiscount > 0 ? String.format(" (toi da %,.0fđ)", maxDiscount) : "";
             return String.format("%s%%%s", formatMoney(discountValue != null ? discountValue : 0.0), cap);
         }
@@ -132,7 +125,7 @@ public class Coupon {
         CompositeEligibilityRule compositeRule = new CompositeEligibilityRule(List.of(dateRule, minOrderRule));
         setEligibilityRule(compositeRule);
 
-        if (discountType == DiscountType.PERCENTAGE) {
+        if (isPercentageCoupon()) {
             PercentageDiscountStrategy strategy = new PercentageDiscountStrategy(discountValue != null ? discountValue : 0.0,
                     maxDiscount != null ? maxDiscount : 0.0);
             setDiscountStrategy(strategy);
@@ -140,6 +133,10 @@ public class Coupon {
             FixedAmountDiscountStrategy strategy = new FixedAmountDiscountStrategy(discountValue != null ? discountValue : 0.0);
             setDiscountStrategy(strategy);
         }
+    }
+
+    public boolean isPercentageCoupon() {
+        return maxDiscount != null;
     }
 
     private String formatMoney(double amount) {
@@ -155,14 +152,6 @@ public class Coupon {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public DiscountType getDiscountType() {
-        return discountType;
-    }
-
-    public void setDiscountType(DiscountType discountType) {
-        this.discountType = discountType;
     }
 
     public Double getDiscountValue() {

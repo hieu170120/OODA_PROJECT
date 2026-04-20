@@ -2,7 +2,6 @@ package com.foodorder.service;
 
 import com.foodorder.entity.Coupon;
 import com.foodorder.entity.Order;
-import com.foodorder.enums.DiscountType;
 import com.foodorder.repository.CouponRepository;
 import com.foodorder.specification.CompositeEligibilityRule;
 import com.foodorder.specification.DateRangeRule;
@@ -146,10 +145,10 @@ public class CouponService {
     }
 
     private String buildDescription(Coupon coupon) {
-        String discountText = coupon.getDiscountType() == DiscountType.PERCENTAGE
+        String discountText = coupon.isPercentageCoupon()
             ? formatMoney(coupon.getDiscountValue() != null ? coupon.getDiscountValue() : 0.0) + "%"
             : formatMoney(coupon.getDiscountValue() != null ? coupon.getDiscountValue() : 0.0) + "đ";
-        String capText = coupon.getDiscountType() == DiscountType.PERCENTAGE
+        String capText = coupon.isPercentageCoupon()
             && coupon.getMaxDiscount() != null
             && coupon.getMaxDiscount() > 0
             ? String.format(" toi da %sđ", formatMoney(coupon.getMaxDiscount()))
@@ -173,12 +172,12 @@ public class CouponService {
             coupon.setId(normalizeCouponCode(coupon.getId()));
         }
 
-        if (coupon.getDiscountType() == null) {
-            coupon.setDiscountType(DiscountType.FIXED_AMOUNT);
-        }
-
         if (coupon.getMinOrderValue() == null) {
             coupon.setMinOrderValue(0.0);
+        }
+
+        if (coupon.getMaxDiscount() != null && coupon.getMaxDiscount() < 0) {
+            coupon.setMaxDiscount(0.0);
         }
 
         coupon.setEligibilityRule(new CompositeEligibilityRule(List.of(
@@ -186,7 +185,7 @@ public class CouponService {
                 new MinOrderRule(coupon.getMinOrderValue())
         )));
 
-        if (coupon.getDiscountType() == DiscountType.PERCENTAGE) {
+        if (coupon.isPercentageCoupon()) {
             coupon.setDiscountStrategy(new PercentageDiscountStrategy(
                     coupon.getDiscountValue() != null ? coupon.getDiscountValue() : 0.0,
                     coupon.getMaxDiscount() != null ? coupon.getMaxDiscount() : 0.0
